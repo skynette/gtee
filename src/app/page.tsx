@@ -1,34 +1,31 @@
 'use client';
 
-import { useRef, useState } from 'react';
-
-
+import { useRef, useState, useEffect } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-
-
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { RiTwitterXFill } from '@remixicon/react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ActivityIcon, ArrowRightIcon, BarChart3Icon, BrainIcon, ChartBarIcon, RocketIcon, ShieldIcon, SparklesIcon, TrendingUpIcon, WalletIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+    BrainIcon,
+    Sparkles,
+    SparklesIcon,
+    TrendingUpIcon,
+    WalletIcon,
+} from 'lucide-react';
 
-
-
+import AIProcessSection from '@/components/ai-process';
+import Features from '@/components/features-section';
 import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
-import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Button } from '@/components/ui/button';
-import { IntegrationsBackground } from '@/components/ui/integrations-background';
-import Marquee from '@/components/ui/marquee';
 import { RainbowButton } from '@/components/ui/rainbow-button';
-import { cn } from '@/lib/utils';
-
 
 interface GradientWrapperProps {
     children: React.ReactNode;
@@ -45,23 +42,43 @@ const GradientWrapper = ({ children }: GradientWrapperProps) => (
     </div>
 );
 
-interface StatsCardProps {
-    label: string;
-    value: string;
-}
+const StatsCard = ({ label, value }: { label: string; value: string }) => {
+    const [isHovered, setIsHovered] = useState(false);
 
-const StatsCard = ({ label, value }: StatsCardProps) => (
-    <motion.div
-        whileHover={{ scale: 1.05 }}
-        className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 transition-opacity group-hover:opacity-100" />
-        <h3 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl font-bold text-transparent">
-            {value}
-        </h3>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <div className="absolute -right-2 -top-2 h-16 w-16 rounded-full bg-primary/5 blur-2xl transition-all group-hover:bg-primary/10" />
-    </motion.div>
-);
+    return (
+        <motion.div
+            whileHover={{ scale: 1.05 }}
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+            className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
+            <motion.div
+                className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-secondary/5"
+                animate={{
+                    opacity: isHovered ? 0.3 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+            />
+
+            <motion.h3
+                className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl font-bold text-transparent"
+                animate={{
+                    scale: isHovered ? 1.1 : 1,
+                }}
+                transition={{ type: 'spring', stiffness: 300 }}>
+                {value}
+            </motion.h3>
+            <p className="text-sm text-muted-foreground">{label}</p>
+
+            <motion.div
+                className="absolute -right-2 -top-2 h-16 w-16 rounded-full bg-primary/5 blur-2xl"
+                animate={{
+                    scale: isHovered ? 1.5 : 1,
+                    opacity: isHovered ? 0.4 : 0.2,
+                }}
+            />
+        </motion.div>
+    );
+};
 
 const MetricsPreviewCard = ({
     title,
@@ -99,87 +116,71 @@ const navItems = [
     },
 ];
 
-const Header = ({ handleLogin }: { handleLogin: (address: string) => void }) => {
+const Header = ({
+    handleLogin,
+}: {
+    handleLogin: (address: string) => void;
+}) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
         <BlurFade delay={0.1} className="relative z-50">
-            <header className="fixed left-0 right-0 top-0">
+            <motion.header
+                className="fixed left-0 right-0 top-0"
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ type: 'spring', stiffness: 100 }}>
                 <div className="mx-auto max-w-6xl px-4 py-4">
-                    <div className="rounded-xl border border-border/50 bg-muted/70 shadow-lg backdrop-blur-md">
+                    <motion.div
+                        className={`rounded-xl border border-border/50 ${
+                            scrolled ? 'bg-background/80' : 'bg-muted/70'
+                        } shadow-lg backdrop-blur-md transition-all duration-300`}
+                        animate={{
+                            borderColor: scrolled
+                                ? 'rgba(255,255,255,0.2)'
+                                : 'rgba(255,255,255,0.1)',
+                        }}>
                         <div className="flex items-center justify-between px-4 py-2">
-                            <div className="relative">
+                            <motion.div
+                                className="relative"
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ type: 'spring', stiffness: 400 }}>
                                 <Brand className="scale-95 transition-opacity hover:opacity-80" />
-                            </div>
-
-                            <nav className="hidden md:ml-auto md:mr-8 md:flex"></nav>
+                            </motion.div>
 
                             <div className="flex items-center gap-3">
-                                <Button
-                                    variant="outline"
-                                    className="h-9 rounded-lg px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                                    onClick={() => handleLogin('')}>
-                                    Docs
-                                </Button>
-
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-9 w-9 md:hidden"
-                                    onClick={() =>
-                                        setIsMobileMenuOpen(!isMobileMenuOpen)
-                                    }>
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="h-4 w-4">
-                                        <line x1="4" x2="20" y1="12" y2="12" />
-                                        <line x1="4" x2="20" y1="6" y2="6" />
-                                        <line x1="4" x2="20" y1="18" y2="18" />
-                                    </svg>
-                                </Button>
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}>
+                                    <Button
+                                        variant="outline"
+                                        className="h-9 rounded-lg bg-primary/10 px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+                                        onClick={() => handleLogin('')}>
+                                        <SparklesIcon className="mr-2 h-4 w-4" />
+                                        Docs
+                                    </Button>
+                                </motion.div>
                             </div>
                         </div>
-                    </div>
-
-                    {isMobileMenuOpen && (
-                        <div className="absolute left-4 right-4 top-full mt-2 rounded-lg border border-border/50 bg-background/95 p-3 shadow-lg backdrop-blur-md md:hidden">
-                            <nav className="flex flex-col gap-1.5">
-                                {navItems.map((item) => {
-                                    const Icon = item.icon;
-                                    return (
-                                        <a
-                                            key={item.label}
-                                            href={item.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary"
-                                            onClick={() =>
-                                                setIsMobileMenuOpen(false)
-                                            }>
-                                            <Icon className="h-4 w-4" />
-                                            {item.label}
-                                        </a>
-                                    );
-                                })}
-                            </nav>
-                        </div>
-                    )}
+                    </motion.div>
                 </div>
-            </header>
+            </motion.header>
         </BlurFade>
     );
 };
 
 const WalletInput = ({ onSubmit }: { onSubmit: (address: string) => void }) => {
     const [address, setAddress] = useState('');
+    const [isHovered, setIsHovered] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -187,25 +188,40 @@ const WalletInput = ({ onSubmit }: { onSubmit: (address: string) => void }) => {
     };
 
     return (
-        <form
+        <motion.form
             onSubmit={handleSubmit}
-            className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
+            className="flex flex-col gap-4 sm:flex-row sm:items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}>
+            <motion.div
+                className="relative flex-1"
+                whileHover={{ scale: 1.02 }}
+                onHoverStart={() => setIsHovered(true)}
+                onHoverEnd={() => setIsHovered(false)}>
                 <input
                     type="text"
                     placeholder="Enter Solana wallet address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="h-12 w-full rounded-lg border bg-background px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="h-12 w-full rounded-lg border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
-                <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            </div>
+                <motion.div
+                    animate={{
+                        scale: isHovered ? 1.1 : 1,
+                        rotate: isHovered ? 360 : 0,
+                    }}
+                    transition={{ duration: 0.5 }}>
+                    <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
+                </motion.div>
+            </motion.div>
             <RainbowButton
                 type="submit"
                 className="h-12 min-w-[140px] text-base transition-all duration-300 hover:scale-105">
+                <Sparkles className="mr-2 h-4 w-4" />
                 Analyze Wallet
             </RainbowButton>
-        </form>
+        </motion.form>
     );
 };
 
@@ -288,227 +304,38 @@ const Hero = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
     </GradientWrapper>
 );
 
-const AIProcessSection = () => (
-    <section className="py-24">
-        <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-16 text-center">
-                <span className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-muted/80 px-4 py-1.5 text-sm font-medium text-primary">
-                    <ActivityIcon className="mr-2 h-4 w-4" />
-                    How It Works
-                </span>
-                <h2 className="mt-4 text-3xl font-bold md:text-4xl">
-                    Solana Wallet Analysis Pipeline
-                </h2>
-                <p className="mt-4 text-muted-foreground">
-                    From wallet address to comprehensive insights in seconds
-                </p>
-            </div>
-
-            <div className="grid gap-8 md:grid-cols-3">
-                {[
-                    {
-                        icon: WalletIcon,
-                        title: 'Submit Address',
-                        description:
-                            'Enter any Solana wallet address to begin analysis',
-                    },
-                    {
-                        icon: BrainIcon,
-                        title: 'AI Processing',
-                        description:
-                            'Our AI analyzes on-chain data and transaction patterns',
-                    },
-                    {
-                        icon: ChartBarIcon,
-                        title: 'View Insights',
-                        description:
-                            'Get detailed metrics and AI-powered recommendations',
-                    },
-                ].map((step, idx) => (
-                    <motion.div
-                        key={idx}
-                        whileHover={{ y: -5 }}
-                        className="group relative rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
-                        <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
-                            <step.icon className="h-6 w-6 text-primary" />
-                        </div>
-                        <h3 className="mb-2 text-xl font-semibold">
-                            {step.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                            {step.description}
-                        </p>
-                        <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </motion.div>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-const features = [
-    {
-        Icon: BrainIcon,
-        name: 'Advanced Solana Analytics',
-        description:
-            'Our AI analyzes every transaction, token transfer, and smart contract interaction on the Solana blockchain to provide comprehensive insights.',
-        className: 'col-span-1 sm:col-span-3 lg:col-span-2',
-        background: (
-            <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                <div className="relative h-full w-full">
-                    <div className="absolute left-10 top-10 h-32 w-32 animate-blob rounded-full bg-primary/30 mix-blend-multiply blur-xl"></div>
-                    <div className="animation-delay-2000 absolute right-10 top-10 h-32 w-32 animate-blob rounded-full bg-secondary/30 mix-blend-multiply blur-xl"></div>
-                </div>
-            </div>
-        ),
-    },
-    {
-        Icon: ChartBarIcon,
-        name: 'SOL Token Metrics',
-        description:
-            'Track SOL balance changes, token holdings, NFTs, and DeFi positions across the Solana ecosystem.',
-        className: 'col-span-1 sm:col-span-3 lg:col-span-1',
-        background: (
-            <Marquee
-                pauseOnHover
-                className="absolute inset-0 [--duration:15s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]">
-                {Array.from({ length: 5 }).map((_, idx) => (
-                    <div
-                        key={idx}
-                        className="mx-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-muted/30 px-3 py-2">
-                        <div className="text-sm font-medium">
-                            {idx % 2 === 0
-                                ? 'Live Analytics'
-                                : 'Real-time Insights'}
-                        </div>
-                    </div>
-                ))}
-            </Marquee>
-        ),
-    },
-    {
-        Icon: TrendingUpIcon,
-        name: 'Protocol Insights',
-        description:
-            'Analyze interactions with Solana protocols, DEXes, lending platforms, and yield farms to optimize your DeFi strategy.',
-        className: 'col-span-1 sm:col-span-3 lg:col-span-3',
-        background: <IntegrationsBackground />,
-    },
-    {
-        Icon: ShieldIcon,
-        name: 'Secure Analysis',
-        description:
-            'Read-only analysis of public blockchain data. No private keys or signatures required.',
-        className: 'col-span-1 sm:col-span-3 lg:col-span-1',
-        background: (
-            <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                <div className="h-32 w-32 animate-pulse rounded-full border-4 border-accent"></div>
-            </div>
-        ),
-    },
-    {
-        Icon: RocketIcon,
-        name: 'Performance Tracking',
-        description:
-            'Track ROI, gas usage, trading performance, and portfolio value across all Solana tokens and protocols.',
-        className: 'col-span-1 sm:col-span-3 lg:col-span-2',
-        background: (
-            <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                <div className="h-32 w-32 animate-pulse rounded-full border-4 border-accent"></div>
-            </div>
-        ),
-    },
-];
-
-interface AIFeatureCardProps {
-    title: string;
-    description: string;
-    icon: React.ComponentType<{ className?: string }>;
-}
-
-const AIFeatureCard = ({
-    title,
-    description,
-    icon: Icon,
-}: AIFeatureCardProps) => (
-    <div className="flex flex-col items-center rounded-xl border bg-card/50 p-6 text-center backdrop-blur-sm transition-all hover:scale-105 hover:bg-card/70">
-        <div className="mb-4 rounded-full bg-primary/10 p-3">
-            <Icon className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="mb-2 text-lg font-semibold">{title}</h3>
-        <p className="text-sm text-muted-foreground">{description}</p>
-    </div>
-);
-
-const Features = () => {
-    return (
-        <BlurFade delay={0.5} className="relative py-16 sm:py-24">
-            <div className="mx-auto max-w-6xl px-4 sm:px-6">
-                <div className="mb-12 text-center sm:mb-16">
-                    <span className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-muted/80 px-4 py-1.5 text-sm font-medium text-primary">
-                        <BrainIcon className="mr-2 h-4 w-4" />
-                        AI-Powered Features
-                    </span>
-                    <h2 className="mb-3 text-2xl font-bold tracking-tight sm:mb-4 sm:text-4xl">
-                        Smart Crypto Analytics
-                    </h2>
-                    <p className="text-sm text-muted-foreground sm:text-base">
-                        Leverage the power of artificial intelligence for
-                        comprehensive portfolio analysis
-                    </p>
-                </div>
-
-                {/* AI Features Grid */}
-                <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <AIFeatureCard
-                        icon={BarChart3Icon}
-                        title="Predictive Analytics"
-                        description="AI-powered price predictions and trend analysis"
-                    />
-                    <AIFeatureCard
-                        icon={ActivityIcon}
-                        title="Risk Assessment"
-                        description="Real-time portfolio risk evaluation and alerts"
-                    />
-                    <AIFeatureCard
-                        icon={RocketIcon}
-                        title="Smart Suggestions"
-                        description="Personalized investment recommendations"
-                    />
-                </div>
-
-                <BentoGrid className="grid-rows-[auto]">
-                    {features.map((feature, idx) => (
-                        <BentoCard
-                            key={idx}
-                            {...feature}
-                            className={cn(
-                                'group relative overflow-hidden rounded-2xl border bg-card p-4 shadow-lg transition-all hover:shadow-xl sm:rounded-3xl sm:p-6',
-                                feature.className,
-                            )}
-                        />
-                    ))}
-                </BentoGrid>
-            </div>
-        </BlurFade>
-    );
-};
-
 const Footer = () => {
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
-        <footer className="mt-auto py-4">
-            <BlurFade
-                delay={0.5}
-                className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
-                <p>© 2024 swap. All rights reserved.</p>
-                <span>|</span>
-                <Link
-                    href="https://x.com/swap_sh"
-                    target="_blank"
-                    title="Follow us on X"
-                    className="transition-colors hover:scale-105 hover:text-primary">
-                    <RiTwitterXFill className="h-4 w-4" />
-                </Link>
+        <footer className="mt-auto py-8">
+            <BlurFade delay={0.5}>
+                <motion.div
+                    className="flex items-center justify-center gap-4 text-sm text-muted-foreground"
+                    whileHover={{ scale: 1.02 }}>
+                    <motion.p
+                        animate={{
+                            color: isHovered
+                                ? 'rgba(255,255,255,0.8)'
+                                : 'rgba(255,255,255,0.5)',
+                        }}>
+                        © 2024 swap. All rights reserved.
+                    </motion.p>
+                    <span>|</span>
+                    <motion.div
+                        whileHover={{ scale: 1.2, rotate: 360 }}
+                        transition={{ type: 'spring', stiffness: 300 }}>
+                        <Link
+                            href="https://x.com/swap_sh"
+                            target="_blank"
+                            title="Follow us on X"
+                            className="transition-colors hover:text-primary"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}>
+                            <RiTwitterXFill className="h-4 w-4" />
+                        </Link>
+                    </motion.div>
+                </motion.div>
             </BlurFade>
         </footer>
     );
@@ -516,21 +343,35 @@ const Footer = () => {
 
 export default function Home() {
     const router = useRouter();
+    
     const analyzeWallet = (address: string) => {
         console.log('Analyzing wallet:', address);
-        // Add your wallet analysis logic here
     };
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <motion.div 
+            className="flex min-h-screen flex-col"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <AiParticlesBackground />
+            
             <Header handleLogin={analyzeWallet} />
+            
             <main className="flex-1">
-                <Hero handleLogin={analyzeWallet} />
-                <AIProcessSection />
-                <Features />
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <Hero handleLogin={analyzeWallet} />
+                    <AIProcessSection />
+                    <Features />
+                </motion.div>
             </main>
+            
             <Footer />
-        </div>
+        </motion.div>
     );
 }
