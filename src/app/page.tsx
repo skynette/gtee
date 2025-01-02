@@ -19,6 +19,7 @@ import { BrainIcon, Sparkles, SparklesIcon, TrendingUpIcon, WalletIcon } from 'l
 
 import AIProcessSection from '@/components/ai-process';
 import Features from '@/components/features-section';
+import Hero from '@/components/hero';
 import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
@@ -58,6 +59,16 @@ const StatsCard = ({
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
             className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
+            {isHovered && (
+                <BorderBeam
+                    size={200}
+                    duration={10}
+                    colorFrom="#6366f1"
+                    colorTo="#ec4899"
+                    borderWidth={1.5}
+                    delay={2}
+                />
+            )}
             <motion.div
                 className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-secondary/5"
                 animate={{
@@ -93,39 +104,46 @@ const MetricsPreviewCard = ({
 }: {
     title: string;
     status: string;
-}) => (
-    <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="group relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-card/60">
-        <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
-                <TrendingUpIcon className="h-4 w-4 text-primary" />
-            </div>
-            <div className="flex-1">
-                <h4 className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-sm font-medium text-transparent">
-                    {title}
-                </h4>
-                <p className="bg-gradient-to-r from-primary/60 via-purple-400/60 to-blue-400/60 bg-clip-text text-xs text-transparent">
-                    {status}
-                </p>
-            </div>
-            <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="h-2 w-2 rounded-full bg-gradient-to-r from-primary via-purple-400 to-blue-400"
-            />
-        </div>
-    </motion.div>
-);
+}) => {
+    const [isHovered, setIsHovered] = useState(false);
 
-const navItems = [
-    {
-        label: 'Github',
-        href: 'https://github.com/d-a-ve',
-        icon: GitHubLogoIcon,
-    },
-];
+    return (
+        <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="group relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-card/60"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}>
+            {isHovered && (
+                <BorderBeam
+                    size={250}
+                    duration={12}
+                    colorFrom="#6366f1"
+                    colorTo="#a855f7"
+                    borderWidth={1.5}
+                />
+            )}
+            <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
+                    <TrendingUpIcon className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1">
+                    <h4 className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-sm font-medium text-transparent">
+                        {title}
+                    </h4>
+                    <p className="bg-gradient-to-r from-primary/60 via-purple-400/60 to-blue-400/60 bg-clip-text text-xs text-transparent">
+                        {status}
+                    </p>
+                </div>
+                <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="h-2 w-2 rounded-full bg-gradient-to-r from-primary via-purple-400 to-blue-400"
+                />
+            </div>
+        </motion.div>
+    );
+};
 
 const Header = ({
     handleLogin,
@@ -210,52 +228,79 @@ const WalletInput = ({ onSubmit }: { onSubmit: (address: string) => void }) => {
                 whileHover={{ scale: 1.02 }}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}>
-                <input
-                    type="text"
-                    placeholder="Enter Solana wallet address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    className="h-12 w-full rounded-lg border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <motion.div
-                    animate={{
-                        scale: isHovered ? 1.1 : 1,
-                        rotate: isHovered ? 360 : 0,
-                    }}
-                    transition={{ duration: 0.5 }}>
-                    <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
-                </motion.div>
+                <div className="relative">
+                    <input
+                        type="text"
+                        placeholder="Enter Solana wallet address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="h-12 w-full rounded-lg border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    {isHovered && (
+                        <BorderBeam
+                            size={300}
+                            duration={10}
+                            colorFrom="#4f46e5"
+                            colorTo="#8b5cf6"
+                            borderWidth={1.5}
+                        />
+                    )}
+                    <motion.div
+                        animate={{
+                            scale: isHovered ? 1.1 : 1,
+                            rotate: isHovered ? 360 : 0,
+                        }}
+                        transition={{ duration: 0.5 }}>
+                        <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
+                    </motion.div>
+                </div>
             </motion.div>
-            <RainbowButton
-                type="submit"
-                className="h-12 min-w-[140px] text-base transition-all duration-300 hover:scale-105">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Analyze Wallet
-            </RainbowButton>
+            <div className="relative">
+                <RainbowButton
+                    type="submit"
+                    className="h-12 min-w-[140px] text-base transition-all duration-300 hover:scale-105">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Analyze Wallet
+                </RainbowButton>
+                <BorderBeam
+                    size={200}
+                    duration={8}
+                    colorFrom="#3b82f6"
+                    colorTo="#8b5cf6"
+                    borderWidth={2}
+                />
+            </div>
         </motion.form>
     );
 };
 
-const Hero = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
+const Heroo = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
     <GradientWrapper>
         <section className="relative pt-24">
             <div className="mx-auto max-w-screen-xl px-6">
                 <BlurFade delay={0.3} className="relative">
-                    {/* Enhanced AI Badge */}
+                    {/* AI Badge */}
                     <div className="mb-8 flex justify-center">
                         <motion.div
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            className="flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
-                            <BrainIcon className="h-4 w-4 text-primary animate-pulse" />
-                            <span className="text-sm font-medium bg-gradient-to-r from-primary via-purple-400 to-blue-400 bg-clip-text text-transparent">
+                            className="relative flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
+                            <BorderBeam
+                                size={150}
+                                duration={15}
+                                colorFrom="#4f46e5"
+                                colorTo="#8b5cf6"
+                                borderWidth={1}
+                            />
+                            <BrainIcon className="h-4 w-4 animate-pulse text-primary" />
+                            <span className="bg-gradient-to-r from-primary via-purple-400 to-blue-400 bg-clip-text text-sm font-medium text-transparent">
                                 Solana AI Analytics
                             </span>
-                            <SparklesIcon className="h-4 w-4 text-primary animate-pulse" />
+                            <SparklesIcon className="h-4 w-4 animate-pulse text-primary" />
                         </motion.div>
                     </div>
 
-                    {/* Enhanced Main Hero Content */}
+                    {/* Main Hero Content */}
                     <div className="relative z-10 text-center">
                         <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
                             <span className="block bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
@@ -271,30 +316,65 @@ const Hero = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
                             </span>
                         </h1>
 
-                        <p className="mx-auto mt-6 max-w-2xl text-lg bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-transparent">
+                        <p className="mx-auto mt-6 max-w-2xl bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-lg text-transparent">
                             Enter any Solana wallet address to get detailed
                             AI-powered analytics, transaction history, and
                             performance metrics. Powered by advanced on-chain
                             analysis.
                         </p>
 
-                        {/* Enhanced Stats Cards */}
+                        {/* Wallet Input Section - Restored */}
+                        <div className="mx-auto mt-10 max-w-2xl">
+                            <WalletInput onSubmit={handleLogin} />
+                        </div>
+
+                        {/* Live Metrics Preview Section - Restored */}
+                        <div className="mx-auto mt-16 max-w-3xl">
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <MetricsPreviewCard
+                                    title="SOL Transaction History"
+                                    status="Enter a wallet address to begin analysis"
+                                />
+                                <MetricsPreviewCard
+                                    title="DeFi Activity"
+                                    status="Scanning Solana protocols..."
+                                />
+                            </div>
+                        </div>
+
+                        {/* Stats Grid */}
                         <div className="mx-auto mt-16 max-w-4xl">
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                                 <StatsCard
-                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">Wallets Analyzed</span>}
+                                    label={
+                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
+                                            Wallets Analyzed
+                                        </span>
+                                    }
                                     value="50K+"
                                 />
-                                <StatsCard 
-                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">SOL Tracked</span>}
-                                    value="2M+" 
-                                />
-                                <StatsCard 
-                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">AI Accuracy</span>}
-                                    value="99%" 
+                                <StatsCard
+                                    label={
+                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
+                                            SOL Tracked
+                                        </span>
+                                    }
+                                    value="2M+"
                                 />
                                 <StatsCard
-                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">Protocols Covered</span>}
+                                    label={
+                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
+                                            AI Accuracy
+                                        </span>
+                                    }
+                                    value="99%"
+                                />
+                                <StatsCard
+                                    label={
+                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
+                                            Protocols Covered
+                                        </span>
+                                    }
                                     value="100+"
                                 />
                             </div>
@@ -345,34 +425,32 @@ const Footer = () => {
 
 export default function Home() {
     const router = useRouter();
-    
+
     const analyzeWallet = (address: string) => {
         console.log('Analyzing wallet:', address);
     };
 
     return (
-        <motion.div 
+        <motion.div
             className="flex min-h-screen flex-col"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
+            transition={{ duration: 0.5 }}>
             <AiParticlesBackground />
-            
+
             <Header handleLogin={analyzeWallet} />
-            
+
             <main className="flex-1">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                >
+                    transition={{ delay: 0.2 }}>
                     <Hero handleLogin={analyzeWallet} />
                     <AIProcessSection />
                     <Features />
                 </motion.div>
             </main>
-            
+
             <Footer />
         </motion.div>
     );
