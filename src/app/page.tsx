@@ -2,25 +2,20 @@
 
 import { useRef, useState } from 'react';
 
+
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+
+
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import {
-    ActivityIcon,
-    ArrowRightIcon,
-    BarChart3Icon,
-    BrainIcon,
-    ChartBarIcon,
-    RocketIcon,
-    ShieldIcon,
-    SparklesIcon,
-    TrendingUpIcon,
-    WalletIcon,
-} from 'lucide-react';
+import { ActivityIcon, ArrowRightIcon, BarChart3Icon, BrainIcon, ChartBarIcon, RocketIcon, ShieldIcon, SparklesIcon, TrendingUpIcon, WalletIcon } from 'lucide-react';
+
+
 
 import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
@@ -33,6 +28,7 @@ import { IntegrationsBackground } from '@/components/ui/integrations-background'
 import Marquee from '@/components/ui/marquee';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { cn } from '@/lib/utils';
+
 
 interface GradientWrapperProps {
     children: React.ReactNode;
@@ -103,11 +99,7 @@ const navItems = [
     },
 ];
 
-interface HeaderProps {
-    handleLogin: () => void;
-}
-
-const Header = ({ handleLogin }: HeaderProps) => {
+const Header = ({ handleLogin }: { handleLogin: (address: string) => void }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
@@ -126,23 +118,98 @@ const Header = ({ handleLogin }: HeaderProps) => {
                                 <Button
                                     variant="outline"
                                     className="h-9 rounded-lg px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                                    onClick={handleLogin}>
-                                    Connect Wallet
+                                    onClick={() => handleLogin('')}>
+                                    Docs
+                                </Button>
+
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-9 w-9 md:hidden"
+                                    onClick={() =>
+                                        setIsMobileMenuOpen(!isMobileMenuOpen)
+                                    }>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="h-4 w-4">
+                                        <line x1="4" x2="20" y1="12" y2="12" />
+                                        <line x1="4" x2="20" y1="6" y2="6" />
+                                        <line x1="4" x2="20" y1="18" y2="18" />
+                                    </svg>
                                 </Button>
                             </div>
                         </div>
                     </div>
+
+                    {isMobileMenuOpen && (
+                        <div className="absolute left-4 right-4 top-full mt-2 rounded-lg border border-border/50 bg-background/95 p-3 shadow-lg backdrop-blur-md md:hidden">
+                            <nav className="flex flex-col gap-1.5">
+                                {navItems.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <a
+                                            key={item.label}
+                                            href={item.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary"
+                                            onClick={() =>
+                                                setIsMobileMenuOpen(false)
+                                            }>
+                                            <Icon className="h-4 w-4" />
+                                            {item.label}
+                                        </a>
+                                    );
+                                })}
+                            </nav>
+                        </div>
+                    )}
                 </div>
             </header>
         </BlurFade>
     );
 };
 
-interface HeroProps {
-    handleLogin: () => void;
-}
+const WalletInput = ({ onSubmit }: { onSubmit: (address: string) => void }) => {
+    const [address, setAddress] = useState('');
 
-const Hero = ({ handleLogin }: HeroProps) => (
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(address);
+    };
+
+    return (
+        <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+                <input
+                    type="text"
+                    placeholder="Enter Solana wallet address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="h-12 w-full rounded-lg border bg-background px-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            </div>
+            <RainbowButton
+                type="submit"
+                className="h-12 min-w-[140px] text-base transition-all duration-300 hover:scale-105">
+                Analyze Wallet
+            </RainbowButton>
+        </form>
+    );
+};
+
+const Hero = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
     <GradientWrapper>
         <section className="relative pt-24">
             <div className="mx-auto max-w-screen-xl px-6">
@@ -155,7 +222,7 @@ const Hero = ({ handleLogin }: HeroProps) => (
                             className="flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
                             <BrainIcon className="h-4 w-4 text-primary" />
                             <span className="text-sm font-medium text-primary">
-                                AI-Powered Wallet Analysis
+                                Solana AI Analytics
                             </span>
                             <SparklesIcon className="h-4 w-4 text-primary" />
                         </motion.div>
@@ -164,45 +231,38 @@ const Hero = ({ handleLogin }: HeroProps) => (
                     {/* Main Hero Content */}
                     <div className="relative z-10 text-center">
                         <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                            <span className="block">Transform Your</span>
+                            <span className="block">Analyze Any</span>
                             <AnimatedShinyText>
                                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                                    Crypto Portfolio
+                                    Solana Wallet
                                 </span>
                             </AnimatedShinyText>
                             <span className="block">With AI Insights</span>
                         </h1>
 
                         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-                            Instantly analyze your wallet, track performance,
-                            and receive AI-driven investment recommendations.
-                            Real-time metrics powered by advanced machine
-                            learning.
+                            Enter any Solana wallet address to get detailed
+                            AI-powered analytics, transaction history, and
+                            performance metrics. Powered by advanced on-chain
+                            analysis.
                         </p>
 
-                        {/* CTAs */}
-                        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                            <RainbowButton
-                                onClick={handleLogin}
-                                className="group relative h-12 min-w-[200px] overflow-hidden text-base">
-                                <WalletIcon className="mr-2 h-4 w-4" />
-                                Connect Wallet
-                                <div className="absolute inset-0 -z-10 animate-pulse bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 transition-opacity group-hover:opacity-100" />
-                            </RainbowButton>
-
-                            <Button
-                                variant="outline"
-                                className="h-12 min-w-[200px] gap-2 bg-background/50 text-base backdrop-blur-sm">
-                                See How It Works
-                                <ArrowRightIcon className="h-4 w-4" />
-                            </Button>
+                        {/* Wallet Input */}
+                        <div className="mx-auto mt-10 max-w-2xl">
+                            <WalletInput onSubmit={handleLogin} />
                         </div>
 
                         {/* Live Metrics Preview */}
                         <div className="mx-auto mt-16 max-w-3xl">
                             <div className="grid gap-4 md:grid-cols-2">
-                                <MetricsPreviewCard />
-                                <MetricsPreviewCard />
+                                <MetricsPreviewCard
+                                    title="SOL Transaction History"
+                                    status="Enter a wallet address to begin analysis"
+                                />
+                                <MetricsPreviewCard
+                                    title="DeFi Activity"
+                                    status="Scanning Solana protocols..."
+                                />
                             </div>
                         </div>
 
@@ -211,14 +271,14 @@ const Hero = ({ handleLogin }: HeroProps) => (
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                                 <StatsCard
                                     label="Wallets Analyzed"
-                                    value="10K+"
+                                    value="50K+"
                                 />
-                                <StatsCard
-                                    label="Daily Predictions"
-                                    value="1M+"
-                                />
+                                <StatsCard label="SOL Tracked" value="2M+" />
                                 <StatsCard label="AI Accuracy" value="99%" />
-                                <StatsCard label="User Growth" value="47%" />
+                                <StatsCard
+                                    label="Protocols Covered"
+                                    value="100+"
+                                />
                             </div>
                         </div>
                     </div>
@@ -237,10 +297,10 @@ const AIProcessSection = () => (
                     How It Works
                 </span>
                 <h2 className="mt-4 text-3xl font-bold md:text-4xl">
-                    AI-Powered Analysis Pipeline
+                    Solana Wallet Analysis Pipeline
                 </h2>
                 <p className="mt-4 text-muted-foreground">
-                    From wallet connection to actionable insights in seconds
+                    From wallet address to comprehensive insights in seconds
                 </p>
             </div>
 
@@ -248,21 +308,21 @@ const AIProcessSection = () => (
                 {[
                     {
                         icon: WalletIcon,
-                        title: 'Connect Wallet',
+                        title: 'Submit Address',
                         description:
-                            'Securely link your crypto wallet with one click',
+                            'Enter any Solana wallet address to begin analysis',
                     },
                     {
                         icon: BrainIcon,
-                        title: 'AI Analysis',
+                        title: 'AI Processing',
                         description:
-                            'Our AI models analyze your transaction history and patterns',
+                            'Our AI analyzes on-chain data and transaction patterns',
                     },
                     {
                         icon: ChartBarIcon,
-                        title: 'Get Insights',
+                        title: 'View Insights',
                         description:
-                            'Receive personalized metrics and investment recommendations',
+                            'Get detailed metrics and AI-powered recommendations',
                     },
                 ].map((step, idx) => (
                     <motion.div
@@ -289,9 +349,9 @@ const AIProcessSection = () => (
 const features = [
     {
         Icon: BrainIcon,
-        name: 'Advanced AI Analysis',
+        name: 'Advanced Solana Analytics',
         description:
-            'Our cutting-edge AI models analyze your portfolio in real-time, providing predictive insights and personalized recommendations based on market conditions and your trading patterns.',
+            'Our AI analyzes every transaction, token transfer, and smart contract interaction on the Solana blockchain to provide comprehensive insights.',
         className: 'col-span-1 sm:col-span-3 lg:col-span-2',
         background: (
             <div className="absolute inset-0 flex items-center justify-center opacity-20">
@@ -304,9 +364,9 @@ const features = [
     },
     {
         Icon: ChartBarIcon,
-        name: 'Real-time Metrics',
+        name: 'SOL Token Metrics',
         description:
-            'Access detailed analytics including profit/loss tracking, portfolio diversification scores, and risk assessments updated in real-time.',
+            'Track SOL balance changes, token holdings, NFTs, and DeFi positions across the Solana ecosystem.',
         className: 'col-span-1 sm:col-span-3 lg:col-span-1',
         background: (
             <Marquee
@@ -328,17 +388,17 @@ const features = [
     },
     {
         Icon: TrendingUpIcon,
-        name: 'AI Investment Insights',
+        name: 'Protocol Insights',
         description:
-            'Receive personalized investment recommendations, market trend analysis, and risk warnings based on your transaction history and current market conditions.',
+            'Analyze interactions with Solana protocols, DEXes, lending platforms, and yield farms to optimize your DeFi strategy.',
         className: 'col-span-1 sm:col-span-3 lg:col-span-3',
         background: <IntegrationsBackground />,
     },
     {
         Icon: ShieldIcon,
-        name: 'Security & Privacy',
+        name: 'Secure Analysis',
         description:
-            'Your wallet data is analyzed securely with end-to-end encryption. We never store private keys or sensitive information.',
+            'Read-only analysis of public blockchain data. No private keys or signatures required.',
         className: 'col-span-1 sm:col-span-3 lg:col-span-1',
         background: (
             <div className="absolute inset-0 flex items-center justify-center opacity-20">
@@ -348,9 +408,9 @@ const features = [
     },
     {
         Icon: RocketIcon,
-        name: 'Smart Portfolio Optimization',
+        name: 'Performance Tracking',
         description:
-            'Get AI-powered suggestions for portfolio rebalancing, profit-taking strategies, and risk management based on your investment goals.',
+            'Track ROI, gas usage, trading performance, and portfolio value across all Solana tokens and protocols.',
         className: 'col-span-1 sm:col-span-3 lg:col-span-2',
         background: (
             <div className="absolute inset-0 flex items-center justify-center opacity-20">
@@ -440,10 +500,10 @@ const Footer = () => {
             <BlurFade
                 delay={0.5}
                 className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
-                <p>© 2024 Neur. All rights reserved.</p>
+                <p>© 2024 swap. All rights reserved.</p>
                 <span>|</span>
                 <Link
-                    href="https://x.com/neur_sh"
+                    href="https://x.com/swap_sh"
                     target="_blank"
                     title="Follow us on X"
                     className="transition-colors hover:scale-105 hover:text-primary">
@@ -456,16 +516,17 @@ const Footer = () => {
 
 export default function Home() {
     const router = useRouter();
-    const login = () => {
-        console.log('open wallet connection dialog here');
+    const analyzeWallet = (address: string) => {
+        console.log('Analyzing wallet:', address);
+        // Add your wallet analysis logic here
     };
 
     return (
         <div className="flex min-h-screen flex-col">
             <AiParticlesBackground />
-            <Header handleLogin={login} />
+            <Header handleLogin={analyzeWallet} />
             <main className="flex-1">
-                <Hero handleLogin={login} />
+                <Hero handleLogin={analyzeWallet} />
                 <AIProcessSection />
                 <Features />
             </main>
