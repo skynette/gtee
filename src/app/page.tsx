@@ -57,8 +57,7 @@ interface StatsCardProps {
 const StatsCard = ({ label, value }: StatsCardProps) => (
     <motion.div
         whileHover={{ scale: 1.05 }}
-        className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm"
-    >
+        className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 transition-opacity group-hover:opacity-100" />
         <h3 className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl font-bold text-transparent">
             {value}
@@ -68,21 +67,24 @@ const StatsCard = ({ label, value }: StatsCardProps) => (
     </motion.div>
 );
 
-const MetricsPreviewCard = () => (
+const MetricsPreviewCard = ({
+    title,
+    status,
+}: {
+    title: string;
+    status: string;
+}) => (
     <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm"
-    >
+        className="relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
         <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                 <TrendingUpIcon className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1">
-                <h4 className="text-sm font-medium">Portfolio Performance</h4>
-                <p className="text-xs text-muted-foreground">
-                    AI Analysis in Progress...
-                </p>
+                <h4 className="text-sm font-medium">{title}</h4>
+                <p className="text-xs text-muted-foreground">{status}</p>
             </div>
             <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
@@ -124,8 +126,7 @@ const Header = ({ handleLogin }: HeaderProps) => {
                                 <Button
                                     variant="outline"
                                     className="h-9 rounded-lg px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                                    onClick={handleLogin}
-                                >
+                                    onClick={handleLogin}>
                                     Connect Wallet
                                 </Button>
                             </div>
@@ -151,8 +152,7 @@ const Hero = ({ handleLogin }: HeroProps) => (
                         <motion.div
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            className="flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm"
-                        >
+                            className="flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
                             <BrainIcon className="h-4 w-4 text-primary" />
                             <span className="text-sm font-medium text-primary">
                                 AI-Powered Wallet Analysis
@@ -184,8 +184,7 @@ const Hero = ({ handleLogin }: HeroProps) => (
                         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                             <RainbowButton
                                 onClick={handleLogin}
-                                className="group relative h-12 min-w-[200px] overflow-hidden text-base"
-                            >
+                                className="group relative h-12 min-w-[200px] overflow-hidden text-base">
                                 <WalletIcon className="mr-2 h-4 w-4" />
                                 Connect Wallet
                                 <div className="absolute inset-0 -z-10 animate-pulse bg-gradient-to-r from-primary/20 to-secondary/20 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -193,8 +192,7 @@ const Hero = ({ handleLogin }: HeroProps) => (
 
                             <Button
                                 variant="outline"
-                                className="h-12 min-w-[200px] gap-2 bg-background/50 text-base backdrop-blur-sm"
-                            >
+                                className="h-12 min-w-[200px] gap-2 bg-background/50 text-base backdrop-blur-sm">
                                 See How It Works
                                 <ArrowRightIcon className="h-4 w-4" />
                             </Button>
@@ -270,8 +268,7 @@ const AIProcessSection = () => (
                     <motion.div
                         key={idx}
                         whileHover={{ y: -5 }}
-                        className="group relative rounded-xl border bg-card/50 p-6 backdrop-blur-sm"
-                    >
+                        className="group relative rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
                         <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
                             <step.icon className="h-6 w-6 text-primary" />
                         </div>
@@ -314,13 +311,11 @@ const features = [
         background: (
             <Marquee
                 pauseOnHover
-                className="absolute inset-0 [--duration:15s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]"
-            >
+                className="absolute inset-0 [--duration:15s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]">
                 {Array.from({ length: 5 }).map((_, idx) => (
                     <div
                         key={idx}
-                        className="mx-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-muted/30 px-3 py-2"
-                    >
+                        className="mx-2 flex items-center gap-2 rounded-xl border border-primary/20 bg-muted/30 px-3 py-2">
                         <div className="text-sm font-medium">
                             {idx % 2 === 0
                                 ? 'Live Analytics'
@@ -444,16 +439,14 @@ const Footer = () => {
         <footer className="mt-auto py-4">
             <BlurFade
                 delay={0.5}
-                className="flex items-center justify-center gap-3 text-sm text-muted-foreground"
-            >
+                className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>© 2024 Neur. All rights reserved.</p>
                 <span>|</span>
                 <Link
                     href="https://x.com/neur_sh"
                     target="_blank"
                     title="Follow us on X"
-                    className="transition-colors hover:scale-105 hover:text-primary"
-                >
+                    className="transition-colors hover:scale-105 hover:text-primary">
                     <RiTwitterXFill className="h-4 w-4" />
                 </Link>
             </BlurFade>

@@ -37,8 +37,7 @@ export function Banner({ children }: BannerProps) {
                 <button
                     type="button"
                     className="-m-1.5 flex-none p-1.5 hover:opacity-80"
-                    onClick={handleDismiss}
-                >
+                    onClick={handleDismiss}>
                     <span className="sr-only">Dismiss</span>
                     <X className="h-5 w-5" aria-hidden="true" />
                 </button>

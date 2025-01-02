@@ -29,8 +29,7 @@ const BlurIn = ({ word, className, variant, duration = 1 }: BlurInProps) => {
             className={cn(
                 'font-display text-center text-4xl font-bold tracking-[-0.02em] drop-shadow-sm md:text-7xl md:leading-[5rem]',
                 className,
-            )}
-        >
+            )}>
             {word}
         </motion.h1>
     );

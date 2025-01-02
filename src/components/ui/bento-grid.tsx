@@ -17,8 +17,7 @@ const BentoGrid = ({
             className={cn(
                 'grid w-full auto-rows-[20rem] grid-cols-1 gap-3 sm:auto-rows-[22rem] sm:grid-cols-3 sm:gap-4',
                 className,
-            )}
-        >
+            )}>
             {children}
         </div>
     );
@@ -50,15 +49,13 @@ const BentoCard = ({
             // dark styles
             'transform-gpu dark:bg-black dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]',
             className,
-        )}
-    >
+        )}>
         <div>{background}</div>
         <div
             className={cn(
                 'pointer-events-none z-10 flex transform-gpu flex-col gap-1 p-4 transition-all duration-300 sm:p-6',
                 href && cta ? 'group-hover:-translate-y-10' : '',
-            )}
-        >
+            )}>
             <Icon className="h-8 w-8 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75 sm:h-12 sm:w-12" />
             <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 sm:text-xl">
                 {name}
@@ -72,14 +69,12 @@ const BentoCard = ({
             <div
                 className={cn(
                     'pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100',
-                )}
-            >
+                )}>
                 <Button
                     variant="ghost"
                     asChild
                     size="sm"
-                    className="pointer-events-auto"
-                >
+                    className="pointer-events-auto">
                     <a href={href}>
                         {cta}
                         <ArrowRightIcon className="ml-2 h-4 w-4" />

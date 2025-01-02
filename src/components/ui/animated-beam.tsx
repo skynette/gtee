@@ -144,8 +144,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
                 'pointer-events-none absolute left-0 top-0 transform-gpu stroke-2',
                 className,
             )}
-            viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
-        >
+            viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}>
             <path
                 d={pathD}
                 stroke={pathColor}
@@ -183,16 +182,14 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
                         ease: [0.16, 1, 0.3, 1], // https://easings.net/#easeOutExpo
                         repeat: Infinity,
                         repeatDelay: 0,
-                    }}
-                >
+                    }}>
                     <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
                     <stop stopColor={gradientStartColor}></stop>
                     <stop offset="32.5%" stopColor={gradientStopColor}></stop>
                     <stop
                         offset="100%"
                         stopColor={gradientStopColor}
-                        stopOpacity="0"
-                    ></stop>
+                        stopOpacity="0"></stop>
                 </motion.linearGradient>
             </defs>
         </svg>

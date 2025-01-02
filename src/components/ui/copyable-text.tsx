@@ -42,8 +42,7 @@ export const CopyableText = ({ text, showSolscan = false }: Props) => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleCopy(text)}
-                    className="h-6 w-6 hover:bg-sidebar-accent/50"
-                >
+                    className="h-6 w-6 hover:bg-sidebar-accent/50">
                     <Copy className="h-3.5 w-3.5" />
                 </Button>
                 {shouldShowSolscanLink && (
@@ -51,13 +50,11 @@ export const CopyableText = ({ text, showSolscan = false }: Props) => {
                         variant="ghost"
                         size="sm"
                         asChild
-                        className="h-6 w-6 hover:bg-sidebar-accent/50"
-                    >
+                        className="h-6 w-6 hover:bg-sidebar-accent/50">
                         <a
                             href={`https://solscan.io/account/${text}`}
                             target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                            rel="noopener noreferrer">
                             <ExternalLink className="h-3.5 w-3.5" />
                         </a>
                     </Button>

@@ -38,8 +38,7 @@ export const AnimatedList = React.memo(
                 <AnimatePresence>
                     {itemsToShow.map((item) => (
                         <AnimatedListItem
-                            key={(item as React.ReactElement).key}
-                        >
+                            key={(item as React.ReactElement).key}>
                             {item}
                         </AnimatedListItem>
                     ))}

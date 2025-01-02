@@ -26,8 +26,7 @@ export function RainbowButton({
 
                 className,
             )}
-            {...props}
-        >
+            {...props}>
             {children}
         </button>
     );

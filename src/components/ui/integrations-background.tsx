@@ -22,14 +22,12 @@ export const IntegrationsBackground = () => {
     return (
         <div
             className="absolute inset-0 flex items-center justify-end pr-12"
-            ref={containerRef}
-        >
+            ref={containerRef}>
             <div className="flex size-full max-h-[180px] max-w-[300px] flex-col items-stretch justify-between gap-6">
                 <div className="flex flex-row items-center justify-between">
                     <Circle
                         ref={div1Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/dexscreener.svg"
                             alt="DexScreener"
@@ -39,8 +37,7 @@ export const IntegrationsBackground = () => {
                     </Circle>
                     <Circle
                         ref={div5Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/dialect.svg"
                             alt="Dialect"
@@ -52,8 +49,7 @@ export const IntegrationsBackground = () => {
                 <div className="flex flex-row items-center justify-between">
                     <Circle
                         ref={div2Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/jupiter.svg"
                             alt="Jupiter"
@@ -63,16 +59,14 @@ export const IntegrationsBackground = () => {
                     </Circle>
                     <Circle
                         ref={div4Ref}
-                        className="size-14 transition-transform hover:scale-110"
-                    >
+                        className="size-14 transition-transform hover:scale-110">
                         <div className="size-8">
                             <Logo />
                         </div>
                     </Circle>
                     <Circle
                         ref={div6Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/magic_eden.svg"
                             alt="Magic Eden"
@@ -84,8 +78,7 @@ export const IntegrationsBackground = () => {
                 <div className="flex flex-row items-center justify-between">
                     <Circle
                         ref={div3Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/pump_fun.svg"
                             alt="Pump Fun"
@@ -95,8 +88,7 @@ export const IntegrationsBackground = () => {
                     </Circle>
                     <Circle
                         ref={div7Ref}
-                        className="transition-transform hover:scale-110"
-                    >
+                        className="transition-transform hover:scale-110">
                         <Image
                             src="/integrations/defined_fi.svg"
                             alt="Defined Fi"

@@ -20,8 +20,7 @@ export function ComingSoonPage({
                 '[background-image:radial-gradient(rgb(229_229_229/0.5)_1px,transparent_1px)] dark:[background-image:radial-gradient(rgb(64_64_64/0.25)_1px,transparent_1px)]',
                 '[background-size:40px_40px]',
                 className,
-            )}
-        >
+            )}>
             {/* Gradient Overlay */}
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-background via-background/90 to-background/50">
                 <div className="relative">

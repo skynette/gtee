@@ -33,14 +33,12 @@ export default function RootLayout({
                 className={cn(
                     `${geistSans.variable} ${geistMono.variable}`,
                     'overflow-x-hidden antialiased',
-                )}
-            >
+                )}>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="dark"
                     enableSystem
-                    disableTransitionOnChange
-                >
+                    disableTransitionOnChange>
                     <main className="overflow-hidden md:overflow-visible">
                         {children}
                         <Toaster />

@@ -29,8 +29,7 @@ export default function Marquee({
                     'flex-col': vertical,
                 },
                 className,
-            )}
-        >
+            )}>
             {Array(repeat)
                 .fill(0)
                 .map((_, i) => (
@@ -45,8 +44,7 @@ export default function Marquee({
                                     pauseOnHover,
                                 '[animation-direction:reverse]': reverse,
                             },
-                        )}
-                    >
+                        )}>
                         {children}
                     </div>
                 ))}
