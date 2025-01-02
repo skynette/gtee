@@ -47,22 +47,6 @@ const Header = ({ handleLogin }: { handleLogin: () => void }) => {
                             </div>
 
                             <nav className="hidden md:ml-auto md:mr-8 md:flex">
-                                {navItems.map((item) => {
-                                    const Icon = item.icon;
-                                    return (
-                                        <a
-                                            key={item.label}
-                                            href={item.href}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="group relative flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                                        >
-                                            <Icon className="h-4 w-4" />
-                                            {item.label}
-                                            <span className="absolute inset-x-4 -bottom-px h-px scale-x-0 bg-gradient-to-r from-primary/0 via-primary/70 to-primary/0 transition-transform duration-300 group-hover:scale-x-100" />
-                                        </a>
-                                    );
-                                })}
                             </nav>
 
                             <div className="flex items-center gap-3">
@@ -71,7 +55,7 @@ const Header = ({ handleLogin }: { handleLogin: () => void }) => {
                                     className="h-9 rounded-lg px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
                                     onClick={handleLogin}
                                 >
-                                    Login
+                                    Docs
                                 </Button>
 
                                 <Button
