@@ -1,21 +1,21 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+
+
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
-import {
-    BrainIcon,
-    Sparkles,
-    SparklesIcon,
-    TrendingUpIcon,
-    WalletIcon,
-} from 'lucide-react';
+import { BrainIcon, Sparkles, SparklesIcon, TrendingUpIcon, WalletIcon } from 'lucide-react';
+
+
 
 import AIProcessSection from '@/components/ai-process';
 import Features from '@/components/features-section';
@@ -26,6 +26,7 @@ import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Button } from '@/components/ui/button';
 import { RainbowButton } from '@/components/ui/rainbow-button';
+
 
 interface GradientWrapperProps {
     children: React.ReactNode;
@@ -42,7 +43,13 @@ const GradientWrapper = ({ children }: GradientWrapperProps) => (
     </div>
 );
 
-const StatsCard = ({ label, value }: { label: string; value: string }) => {
+const StatsCard = ({
+    label,
+    value,
+}: {
+    label: React.ReactNode;
+    value: string;
+}) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -60,17 +67,17 @@ const StatsCard = ({ label, value }: { label: string; value: string }) => {
             />
 
             <motion.h3
-                className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-4xl font-bold text-transparent"
+                className="bg-gradient-to-r from-primary via-purple-400 to-blue-500 bg-clip-text text-4xl font-bold text-transparent"
                 animate={{
                     scale: isHovered ? 1.1 : 1,
                 }}
                 transition={{ type: 'spring', stiffness: 300 }}>
                 {value}
             </motion.h3>
-            <p className="text-sm text-muted-foreground">{label}</p>
+            {label}
 
             <motion.div
-                className="absolute -right-2 -top-2 h-16 w-16 rounded-full bg-primary/5 blur-2xl"
+                className="absolute -right-2 -top-2 h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 via-purple-500/20 to-blue-500/20 blur-2xl"
                 animate={{
                     scale: isHovered ? 1.5 : 1,
                     opacity: isHovered ? 0.4 : 0.2,
@@ -90,19 +97,23 @@ const MetricsPreviewCard = ({
     <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
+        className="group relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-card/60">
         <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <TrendingUpIcon className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1">
-                <h4 className="text-sm font-medium">{title}</h4>
-                <p className="text-xs text-muted-foreground">{status}</p>
+                <h4 className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-sm font-medium text-transparent">
+                    {title}
+                </h4>
+                <p className="bg-gradient-to-r from-primary/60 via-purple-400/60 to-blue-400/60 bg-clip-text text-xs text-transparent">
+                    {status}
+                </p>
             </div>
             <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="h-2 w-2 rounded-full bg-primary"
+                className="h-2 w-2 rounded-full bg-gradient-to-r from-primary via-purple-400 to-blue-400"
             />
         </div>
     </motion.div>
@@ -230,69 +241,60 @@ const Hero = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
         <section className="relative pt-24">
             <div className="mx-auto max-w-screen-xl px-6">
                 <BlurFade delay={0.3} className="relative">
-                    {/* AI Badge */}
+                    {/* Enhanced AI Badge */}
                     <div className="mb-8 flex justify-center">
                         <motion.div
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             className="flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
-                            <BrainIcon className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium text-primary">
+                            <BrainIcon className="h-4 w-4 text-primary animate-pulse" />
+                            <span className="text-sm font-medium bg-gradient-to-r from-primary via-purple-400 to-blue-400 bg-clip-text text-transparent">
                                 Solana AI Analytics
                             </span>
-                            <SparklesIcon className="h-4 w-4 text-primary" />
+                            <SparklesIcon className="h-4 w-4 text-primary animate-pulse" />
                         </motion.div>
                     </div>
 
-                    {/* Main Hero Content */}
+                    {/* Enhanced Main Hero Content */}
                     <div className="relative z-10 text-center">
                         <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                            <span className="block">Analyze Any</span>
+                            <span className="block bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
+                                Analyze Any
+                            </span>
                             <AnimatedShinyText>
-                                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-primary via-purple-400 to-blue-500 bg-clip-text text-transparent">
                                     Solana Wallet
                                 </span>
                             </AnimatedShinyText>
-                            <span className="block">With AI Insights</span>
+                            <span className="block bg-gradient-to-r from-white/80 via-white/90 to-white bg-clip-text text-transparent">
+                                With AI Insights
+                            </span>
                         </h1>
 
-                        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+                        <p className="mx-auto mt-6 max-w-2xl text-lg bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-transparent">
                             Enter any Solana wallet address to get detailed
                             AI-powered analytics, transaction history, and
                             performance metrics. Powered by advanced on-chain
                             analysis.
                         </p>
 
-                        {/* Wallet Input */}
-                        <div className="mx-auto mt-10 max-w-2xl">
-                            <WalletInput onSubmit={handleLogin} />
-                        </div>
-
-                        {/* Live Metrics Preview */}
-                        <div className="mx-auto mt-16 max-w-3xl">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <MetricsPreviewCard
-                                    title="SOL Transaction History"
-                                    status="Enter a wallet address to begin analysis"
-                                />
-                                <MetricsPreviewCard
-                                    title="DeFi Activity"
-                                    status="Scanning Solana protocols..."
-                                />
-                            </div>
-                        </div>
-
-                        {/* Stats Grid */}
+                        {/* Enhanced Stats Cards */}
                         <div className="mx-auto mt-16 max-w-4xl">
                             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                                 <StatsCard
-                                    label="Wallets Analyzed"
+                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">Wallets Analyzed</span>}
                                     value="50K+"
                                 />
-                                <StatsCard label="SOL Tracked" value="2M+" />
-                                <StatsCard label="AI Accuracy" value="99%" />
+                                <StatsCard 
+                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">SOL Tracked</span>}
+                                    value="2M+" 
+                                />
+                                <StatsCard 
+                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">AI Accuracy</span>}
+                                    value="99%" 
+                                />
                                 <StatsCard
-                                    label="Protocols Covered"
+                                    label={<span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">Protocols Covered</span>}
                                     value="100+"
                                 />
                             </div>
