@@ -75,8 +75,9 @@ export class DuneAPIClient {
                 query_parameters: {
                     wallet_address: walletAddress,
                 },
-                performance: 'large',
+                performance: 'medium',
             });
+            console.log("execute: query", response.data)
             return response.data;
         } catch (error) {
             throw new Error(`Failed to execute query: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -89,6 +90,7 @@ export class DuneAPIClient {
     private async checkExecutionStatus(executionId: string): Promise<ExecutionStatus> {
         try {
             const response = await this.client.get<ExecutionStatus>(`/execution/${executionId}/status`);
+            console.log("execution status", response.data)
             return response.data;
         } catch (error) {
             throw new Error(`Failed to check execution status: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -101,6 +103,7 @@ export class DuneAPIClient {
     private async getExecutionResults(executionId: string): Promise<ExecutionResults> {
         try {
             const response = await this.client.get<ExecutionResults>(`/execution/${executionId}/results`);
+            console.log("execution results", response.data)
             return response.data;
         } catch (error) {
             throw new Error(`Failed to get execution results: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -115,6 +118,7 @@ export class DuneAPIClient {
 
         while (retries < this.MAX_RETRIES) {
             const status = await this.checkExecutionStatus(executionId);
+            console.log("poll exec status", status)
 
             if (status.state === 'QUERY_STATE_COMPLETED') {
                 return status;
@@ -134,7 +138,7 @@ export class DuneAPIClient {
     /**
      * Main function to get wallet trading data
      */
-    public async getWalletTradingData(queryId: string, walletAddress: string): Promise<TokenData[]> {
+    public async getWalletTradingData(queryId: string, walletAddress: string): Promise<ExecutionResults> {
         try {
             // Step 1: Execute query
             const execution = await this.executeQuery(queryId, walletAddress);
@@ -144,8 +148,9 @@ export class DuneAPIClient {
 
             // Step 3: Get results
             const results = await this.getExecutionResults(execution.execution_id);
+            console.log({ results })
 
-            return results.result.rows;
+            return results;
         } catch (error) {
             throw new Error(`Failed to get wallet trading data: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
