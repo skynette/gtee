@@ -1,0 +1,59 @@
+
+Please analyze the following trading data and provide:
+
+1. Overall Performance Analysis:
+- Total number of trades
+- Most profitable/unprofitable trades
+- Total portfolio value in active positions
+- Win rate and average R/R ratio
+
+2. Time-Based Analysis:
+- Average holding time (winners vs losers)
+- Best performing timeframes
+- Time-based patterns
+- Entry/exit timing efficiency
+
+3. Position Size Analysis:
+- Win rate by position size categories
+- Risk-adjusted returns
+- Position size distribution
+- Capital efficiency metrics
+
+4. Pattern Recognition:
+- Price movement characteristics of winners
+- Common patterns in losing trades
+- Volume analysis
+- Momentum indicators
+
+5. Risk Management Assessment:
+- Position sizing consistency
+- Stop-loss adherence
+- Risk per trade analysis
+- Portfolio concentration
+
+And most importantly of all: Trading Mistakes & Improvements:
+- Common entry/exit errors
+- Position management issues
+- Risk management gaps
+- Suggested improvements
+
+# Trading Analysis API Response Template
+
+Please return results in the following structure:
+
+
+3. Analysis Text (Safe HTML for rendering):
+{
+  "mistakes": [
+    { "title": string, "description": string, "severity": "high"|"medium"|"low" }
+  ],
+  "improvements": [
+    { "category": string, "recommendations": string[] }
+  ],
+  "patterns": {
+    "winning": string[],
+    "losing": string[],
+    "general": string[]
+  }
+}
+

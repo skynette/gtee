@@ -1,0 +1,53 @@
+{
+    "trades": [
+        {
+            "token": "string",
+            "entry": {
+                "price": "number",
+                "amount": "number",
+                "timestamp": "ISO8601",
+                "total_cost": "number"
+            },
+            "exit": {
+                "price": "number",
+                "amount": "number",
+                "timestamp": "ISO8601",
+                "total_return": "number"
+            },
+            "metrics": {
+                "pnl": "number",
+                "roi": "number",
+                "holding_time_hours": "number",
+                "max_drawdown": "number"
+            },
+            "status": "OPEN|CLOSED"
+        }
+    ],
+    "portfolio_metrics": {
+        "total_trades": "number",
+        "win_rate": "number",
+        "average_roi": "number",
+        "sharpe_ratio": "number",
+        "max_drawdown": "number"
+    }
+}
+
+// format data into Arrays for possible charts
+1. Summary Metrics (Return as simple key-value pairs for easy rendering):
+{
+  "totalTrades": number,
+  "winRate": number,
+  "totalPnL": number,
+  "activePositions": number,
+  "avgHoldingTime": number,
+  "biggestWin": { token: string, amount: number },
+  "biggestLoss": { token: string, amount: number }
+}
+
+2. Performance Charts Data (Pre-formatted arrays for charting libraries):
+{
+  "pnlDistribution": [{ token: string, pnl: number, color: string }],
+  "positionSizeVsReturns": [{ size: number, return: number }],
+  "timeAnalysis": [{ timeFrame: string, winRate: number }],
+  "riskMetrics": [{ metric: string, value: number }]
+}
