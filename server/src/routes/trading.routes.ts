@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import tradingController from '../controllers/trading.controller';
+import { enqueueTradingDataTask, getTradingDataTask } from '../controllers/trading.controller';
 
 const router = Router();
 
-router.get('/trading/:walletAddress', tradingController.getTradingData);
+router.post('/analyze-trades', enqueueTradingDataTask);
+router.get('/task/:execution_id', getTradingDataTask);
 
 export default router;

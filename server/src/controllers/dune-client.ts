@@ -53,8 +53,6 @@ interface ExecutionResults {
 
 export class DuneAPIClient {
     private readonly client: AxiosInstance;
-    private readonly POLL_INTERVAL = 10000; // 10 seconds
-    private readonly MAX_RETRIES = 30; // 5 minutes with 10s interval
 
     constructor(apiKey: string) {
         this.client = axios.create({
@@ -69,7 +67,7 @@ export class DuneAPIClient {
     /**
      * Initiates a query execution for a wallet address
      */
-    private async executeQuery(queryId: string, walletAddress: string): Promise<ExecutionResponse> {
+    public async executeQuery(queryId: string, walletAddress: string): Promise<ExecutionResponse> {
         try {
             const response = await this.client.post<ExecutionResponse>(`/query/${queryId}/execute`, {
                 query_parameters: {
@@ -87,7 +85,7 @@ export class DuneAPIClient {
     /**
      * Checks the execution status
      */
-    private async checkExecutionStatus(executionId: string): Promise<ExecutionStatus> {
+    public async checkExecutionStatus(executionId: string): Promise<ExecutionStatus> {
         try {
             const response = await this.client.get<ExecutionStatus>(`/execution/${executionId}/status`);
             console.log("execution status", response.data)
@@ -100,7 +98,7 @@ export class DuneAPIClient {
     /**
      * Fetches the execution results
      */
-    private async getExecutionResults(executionId: string): Promise<ExecutionResults> {
+    public async getExecutionResults(executionId: string): Promise<ExecutionResults> {
         try {
             const response = await this.client.get<ExecutionResults>(`/execution/${executionId}/results`);
             console.log("execution results", response.data)
@@ -111,31 +109,6 @@ export class DuneAPIClient {
     }
 
     /**
-     * Polls the execution status until completion or timeout
-     */
-    private async pollExecutionStatus(executionId: string): Promise<ExecutionStatus> {
-        let retries = 0;
-
-        while (retries < this.MAX_RETRIES) {
-            const status = await this.checkExecutionStatus(executionId);
-            console.log("poll exec status", status)
-
-            if (status.state === 'QUERY_STATE_COMPLETED') {
-                return status;
-            }
-
-            if (status.state === 'QUERY_STATE_FAILED') {
-                throw new Error('Query execution failed');
-            }
-
-            await new Promise(resolve => setTimeout(resolve, this.POLL_INTERVAL));
-            retries++;
-        }
-
-        throw new Error('Query execution timed out');
-    }
-
-    /**
      * Main function to get wallet trading data
      */
     public async getWalletTradingData(queryId: string, walletAddress: string): Promise<ExecutionResults> {
@@ -143,10 +116,7 @@ export class DuneAPIClient {
             // Step 1: Execute query
             const execution = await this.executeQuery(queryId, walletAddress);
 
-            // Step 2: Poll for completion
-            await this.pollExecutionStatus(execution.execution_id);
-
-            // Step 3: Get results
+            // Step 2: Get results
             const results = await this.getExecutionResults(execution.execution_id);
             console.log({ results })
 
