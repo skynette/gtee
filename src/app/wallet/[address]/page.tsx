@@ -2,8 +2,10 @@
 'use client';
 
 import { Key, useState } from 'react';
+import { useEffect } from 'react';
 
-import { motion } from 'framer-motion';
+import { useParams } from 'next/navigation';
+
 import {
     ActivityIcon,
     AlertCircleIcon,
@@ -35,21 +37,45 @@ import {
 } from '@/hooks/useWalletAnalysis';
 import { DetailedMetrics } from '@/lib/types/analytics';
 
+// src/app/wallet/[address]/page.tsx
+
 interface DashboardProps {
     params: {
         address: string;
     };
 }
 
-export default function DashboardPage({ params }: DashboardProps) {
-    const decodedAddress = decodeURIComponent(params.address);
-    const { metrics, loading, error, refresh } = useWalletAnalysis(
-        params.address,
-    );
+export default function DashboardPage({}: DashboardProps) {
+    // Use useParams hook to get the address
+    const params = useParams();
+    const address =
+        typeof params?.address === 'string'
+            ? decodeURIComponent(params.address)
+            : '';
+
+    // Initialize your hooks with the decoded address
+    const { metrics, loading, error, refresh } = useWalletAnalysis(address);
     const { topTokens, totalValue } = useTokenAnalysis(metrics);
     const { overallRisk, warnings } = useRiskAnalysis(metrics);
     const { totalReturn, winRate } = usePerformanceMetrics(metrics);
     const { totalSwaps, swapVolume } = useSwapMetrics(metrics);
+
+    useEffect(() => {
+        // Validate address when component mounts
+        if (!address || !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+            console.error('Invalid wallet address');
+            return;
+        }
+    }, [address]);
+
+    if (!address) {
+        return (
+            <ErrorState
+                error={new Error('Invalid wallet address')}
+                onRetry={() => (window.location.href = '/')}
+            />
+        );
+    }
 
     if (loading) return <LoadingState />;
     if (error) return <ErrorState error={error} onRetry={refresh} />;
@@ -62,9 +88,7 @@ export default function DashboardPage({ params }: DashboardProps) {
                     <h1 className="text-2xl font-bold text-foreground">
                         Wallet Analytics
                     </h1>
-                    <p className="text-sm text-muted-foreground">
-                        {params.address}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{address}</p>
                 </div>
                 <Button onClick={refresh} className="flex items-center gap-2">
                     <RefreshCcwIcon className="h-4 w-4" />

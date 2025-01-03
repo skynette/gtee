@@ -123,28 +123,28 @@ const Footer = () => {
 };
 
 export default function Home() {
-    const router = useRouter();
+     const router = useRouter();
 
-    const handleWalletAnalysis = (address: string) => {
-        try {
-            if (!address) {
-                console.error('Please enter a wallet address');
-                return;
-            }
+     const handleWalletAnalysis = async (address: string) => {
+         try {
+             if (!address) {
+                 console.error('Please enter a wallet address');
+                 return;
+             }
 
-            // Basic Solana address validation
-            if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
-                console.error('Invalid Solana wallet address');
-                return;
-            }
+             // Basic Solana address validation
+             if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+                 console.error('Invalid Solana wallet address');
+                 return;
+             }
 
-            // Navigate to the analysis page with proper encoding
-            const encodedAddress = encodeURIComponent(address);
-            router.push(`/wallet/${encodedAddress}`);
-        } catch (error) {
-            console.error('Error processing wallet address:', error);
-        }
-    };
+             // Navigate to the analysis page
+             const encodedAddress = encodeURIComponent(address.trim());
+             await router.push(`/wallet/${encodedAddress}`);
+         } catch (error) {
+             console.error('Navigation error:', error);
+         }
+     };
 
     return (
         <motion.div
