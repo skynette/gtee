@@ -25,15 +25,15 @@ export async function GET(request: Request) {
     }
 
     try {
+        // Create analyzer with minimal config
         const analyzer = new AdvancedWalletAnalyzer(
             process.env.NEXT_PUBLIC_HELIUS_API_KEY!,
             'https://api.mainnet-beta.solana.com',
-            ANALYSIS_CONFIG.modelConfig,
-            DEFAULT_MARKET_DATA  // Add the required fourth argument
+            {}, // Empty config object instead of ML config
+            DEFAULT_MARKET_DATA
         );
 
         const metrics = await analyzer.analyzeWallet(address);
-
         return NextResponse.json({ metrics });
     } catch (error) {
         console.error('Analysis error:', error);
