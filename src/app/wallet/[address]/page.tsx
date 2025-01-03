@@ -42,8 +42,7 @@ interface DashboardProps {
 }
 
 export default function DashboardPage({ params }: DashboardProps) {
-    const [timeframe, setTimeframe] = useState<'1d' | '7d' | '30d'>('7d');
-
+    const decodedAddress = decodeURIComponent(params.address);
     const { metrics, loading, error, refresh } = useWalletAnalysis(
         params.address,
     );
@@ -129,17 +128,26 @@ export default function DashboardPage({ params }: DashboardProps) {
                 <Card className="p-6">
                     <h3 className="mb-4 text-lg font-semibold">Top Tokens</h3>
                     <div className="space-y-4">
-                        {topTokens.map((token: { symbol: string; volume24h: number; profitLoss: number }, index: number) => (
-                            <TokenRow
-                                key={token.symbol}
-                                rank={index + 1}
-                                token={{
-                                    symbol: token.symbol,
-                                    volume: token.volume24h,
-                                    profitLoss: token.profitLoss,
-                                }}
-                            />
-                        ))}
+                        {topTokens.map(
+                            (
+                                token: {
+                                    symbol: string;
+                                    volume24h: number;
+                                    profitLoss: number;
+                                },
+                                index: number,
+                            ) => (
+                                <TokenRow
+                                    key={token.symbol}
+                                    rank={index + 1}
+                                    token={{
+                                        symbol: token.symbol,
+                                        volume: token.volume24h,
+                                        profitLoss: token.profitLoss,
+                                    }}
+                                />
+                            ),
+                        )}
                     </div>
                 </Card>
             </div>
@@ -158,9 +166,14 @@ export default function DashboardPage({ params }: DashboardProps) {
                         Risk Warnings
                     </h3>
                     <div className="space-y-4">
-                        {warnings.map((warning: string, index: Key | null | undefined) => (
-                            <WarningItem key={index} warning={warning} />
-                        ))}
+                        {warnings.map(
+                            (
+                                warning: string,
+                                index: Key | null | undefined,
+                            ) => (
+                                <WarningItem key={index} warning={warning} />
+                            ),
+                        )}
                     </div>
                 </Card>
             </div>

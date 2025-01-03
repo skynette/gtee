@@ -1,54 +1,34 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import Image from 'next/image';
+
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { GitHubLogoIcon } from '@radix-ui/react-icons';
+
+
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
-import {
-    BrainIcon,
-    Sparkles,
-    SparklesIcon,
-    TrendingUpIcon,
-    WalletIcon,
-} from 'lucide-react';
+import { SparklesIcon } from 'lucide-react';
+
+
 
 import AIProcessSection from '@/components/ai-process';
 import Features from '@/components/features-section';
 import Hero from '@/components/hero';
 import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
-import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 import BlurFade from '@/components/ui/blur-fade';
-import { BorderBeam } from '@/components/ui/border-beam';
 import { Button } from '@/components/ui/button';
-import { RainbowButton } from '@/components/ui/rainbow-button';
 
-interface GradientWrapperProps {
-    children: React.ReactNode;
-}
-
-const GradientWrapper = ({ children }: GradientWrapperProps) => (
-    <div className="relative">
-        <div className="absolute inset-0 -z-10">
-            <div className="absolute left-1/4 top-1/4 h-96 w-96 animate-pulse rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute right-1/4 top-1/3 h-96 w-96 animate-pulse rounded-full bg-secondary/10 blur-3xl" />
-            <div className="absolute bottom-1/4 left-1/3 h-96 w-96 animate-pulse rounded-full bg-accent/10 blur-3xl" />
-        </div>
-        {children}
-    </div>
-);
 
 const Header = ({
     handleLogin,
 }: {
     handleLogin: (address: string) => void;
 }) => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -158,11 +138,11 @@ export default function Home() {
                 return;
             }
 
-            // Navigate to the analysis page
-            router.push(`/wallet/${address}`);
+            // Navigate to the analysis page with proper encoding
+            const encodedAddress = encodeURIComponent(address);
+            router.push(`/wallet/${encodedAddress}`);
         } catch (error) {
-            console.error('Error processing wallet address');
-            console.error('Navigation error:', error);
+            console.error('Error processing wallet address:', error);
         }
     };
 
