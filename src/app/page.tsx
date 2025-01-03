@@ -1,19 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 
 
-import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
-import { BrainIcon, Sparkles, SparklesIcon, TrendingUpIcon, WalletIcon } from 'lucide-react';
+import { SparklesIcon } from 'lucide-react';
 
 
 
@@ -22,135 +20,15 @@ import Features from '@/components/features-section';
 import Hero from '@/components/hero';
 import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
-import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 import BlurFade from '@/components/ui/blur-fade';
-import { BorderBeam } from '@/components/ui/border-beam';
 import { Button } from '@/components/ui/button';
-import { RainbowButton } from '@/components/ui/rainbow-button';
 
-
-interface GradientWrapperProps {
-    children: React.ReactNode;
-}
-
-const GradientWrapper = ({ children }: GradientWrapperProps) => (
-    <div className="relative">
-        <div className="absolute inset-0 -z-10">
-            <div className="absolute left-1/4 top-1/4 h-96 w-96 animate-pulse rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute right-1/4 top-1/3 h-96 w-96 animate-pulse rounded-full bg-secondary/10 blur-3xl" />
-            <div className="absolute bottom-1/4 left-1/3 h-96 w-96 animate-pulse rounded-full bg-accent/10 blur-3xl" />
-        </div>
-        {children}
-    </div>
-);
-
-const StatsCard = ({
-    label,
-    value,
-}: {
-    label: React.ReactNode;
-    value: string;
-}) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.div
-            whileHover={{ scale: 1.05 }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            className="group relative overflow-hidden rounded-xl border bg-card/50 p-6 backdrop-blur-sm">
-            {isHovered && (
-                <BorderBeam
-                    size={200}
-                    duration={10}
-                    colorFrom="#6366f1"
-                    colorTo="#ec4899"
-                    borderWidth={1.5}
-                    delay={2}
-                />
-            )}
-            <motion.div
-                className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 to-secondary/5"
-                animate={{
-                    opacity: isHovered ? 0.3 : 0,
-                }}
-                transition={{ duration: 0.3 }}
-            />
-
-            <motion.h3
-                className="bg-gradient-to-r from-primary via-purple-400 to-blue-500 bg-clip-text text-4xl font-bold text-transparent"
-                animate={{
-                    scale: isHovered ? 1.1 : 1,
-                }}
-                transition={{ type: 'spring', stiffness: 300 }}>
-                {value}
-            </motion.h3>
-            {label}
-
-            <motion.div
-                className="absolute -right-2 -top-2 h-16 w-16 rounded-full bg-gradient-to-br from-primary/20 via-purple-500/20 to-blue-500/20 blur-2xl"
-                animate={{
-                    scale: isHovered ? 1.5 : 1,
-                    opacity: isHovered ? 0.4 : 0.2,
-                }}
-            />
-        </motion.div>
-    );
-};
-
-const MetricsPreviewCard = ({
-    title,
-    status,
-}: {
-    title: string;
-    status: string;
-}) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="group relative overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-card/60"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}>
-            {isHovered && (
-                <BorderBeam
-                    size={250}
-                    duration={12}
-                    colorFrom="#6366f1"
-                    colorTo="#a855f7"
-                    borderWidth={1.5}
-                />
-            )}
-            <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
-                    <TrendingUpIcon className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1">
-                    <h4 className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-sm font-medium text-transparent">
-                        {title}
-                    </h4>
-                    <p className="bg-gradient-to-r from-primary/60 via-purple-400/60 to-blue-400/60 bg-clip-text text-xs text-transparent">
-                        {status}
-                    </p>
-                </div>
-                <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="h-2 w-2 rounded-full bg-gradient-to-r from-primary via-purple-400 to-blue-400"
-                />
-            </div>
-        </motion.div>
-    );
-};
 
 const Header = ({
     handleLogin,
 }: {
     handleLogin: (address: string) => void;
 }) => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -207,185 +85,6 @@ const Header = ({
     );
 };
 
-const WalletInput = ({ onSubmit }: { onSubmit: (address: string) => void }) => {
-    const [address, setAddress] = useState('');
-    const [isHovered, setIsHovered] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(address);
-    };
-
-    return (
-        <motion.form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 sm:flex-row sm:items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}>
-            <motion.div
-                className="relative flex-1"
-                whileHover={{ scale: 1.02 }}
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}>
-                <div className="relative">
-                    <input
-                        type="text"
-                        placeholder="Enter Solana wallet address"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="h-12 w-full rounded-lg border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                    {isHovered && (
-                        <BorderBeam
-                            size={300}
-                            duration={10}
-                            colorFrom="#4f46e5"
-                            colorTo="#8b5cf6"
-                            borderWidth={1.5}
-                        />
-                    )}
-                    <motion.div
-                        animate={{
-                            scale: isHovered ? 1.1 : 1,
-                            rotate: isHovered ? 360 : 0,
-                        }}
-                        transition={{ duration: 0.5 }}>
-                        <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
-                    </motion.div>
-                </div>
-            </motion.div>
-            <div className="relative">
-                <RainbowButton
-                    type="submit"
-                    className="h-12 min-w-[140px] text-base transition-all duration-300 hover:scale-105">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Analyze Wallet
-                </RainbowButton>
-                <BorderBeam
-                    size={200}
-                    duration={8}
-                    colorFrom="#3b82f6"
-                    colorTo="#8b5cf6"
-                    borderWidth={2}
-                />
-            </div>
-        </motion.form>
-    );
-};
-
-const Heroo = ({ handleLogin }: { handleLogin: (address: string) => void }) => (
-    <GradientWrapper>
-        <section className="relative pt-24">
-            <div className="mx-auto max-w-screen-xl px-6">
-                <BlurFade delay={0.3} className="relative">
-                    {/* AI Badge */}
-                    <div className="mb-8 flex justify-center">
-                        <motion.div
-                            initial={{ y: -20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            className="relative flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
-                            <BorderBeam
-                                size={150}
-                                duration={15}
-                                colorFrom="#4f46e5"
-                                colorTo="#8b5cf6"
-                                borderWidth={1}
-                            />
-                            <BrainIcon className="h-4 w-4 animate-pulse text-primary" />
-                            <span className="bg-gradient-to-r from-primary via-purple-400 to-blue-400 bg-clip-text text-sm font-medium text-transparent">
-                                Solana AI Analytics
-                            </span>
-                            <SparklesIcon className="h-4 w-4 animate-pulse text-primary" />
-                        </motion.div>
-                    </div>
-
-                    {/* Main Hero Content */}
-                    <div className="relative z-10 text-center">
-                        <h1 className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
-                            <span className="block bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
-                                Analyze Any
-                            </span>
-                            <AnimatedShinyText>
-                                <span className="bg-gradient-to-r from-primary via-purple-400 to-blue-500 bg-clip-text text-transparent">
-                                    Solana Wallet
-                                </span>
-                            </AnimatedShinyText>
-                            <span className="block bg-gradient-to-r from-white/80 via-white/90 to-white bg-clip-text text-transparent">
-                                With AI Insights
-                            </span>
-                        </h1>
-
-                        <p className="mx-auto mt-6 max-w-2xl bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-lg text-transparent">
-                            Enter any Solana wallet address to get detailed
-                            AI-powered analytics, transaction history, and
-                            performance metrics. Powered by advanced on-chain
-                            analysis.
-                        </p>
-
-                        {/* Wallet Input Section - Restored */}
-                        <div className="mx-auto mt-10 max-w-2xl">
-                            <WalletInput onSubmit={handleLogin} />
-                        </div>
-
-                        {/* Live Metrics Preview Section - Restored */}
-                        <div className="mx-auto mt-16 max-w-3xl">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <MetricsPreviewCard
-                                    title="SOL Transaction History"
-                                    status="Enter a wallet address to begin analysis"
-                                />
-                                <MetricsPreviewCard
-                                    title="DeFi Activity"
-                                    status="Scanning Solana protocols..."
-                                />
-                            </div>
-                        </div>
-
-                        {/* Stats Grid */}
-                        <div className="mx-auto mt-16 max-w-4xl">
-                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                                <StatsCard
-                                    label={
-                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
-                                            Wallets Analyzed
-                                        </span>
-                                    }
-                                    value="50K+"
-                                />
-                                <StatsCard
-                                    label={
-                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
-                                            SOL Tracked
-                                        </span>
-                                    }
-                                    value="2M+"
-                                />
-                                <StatsCard
-                                    label={
-                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
-                                            AI Accuracy
-                                        </span>
-                                    }
-                                    value="99%"
-                                />
-                                <StatsCard
-                                    label={
-                                        <span className="bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
-                                            Protocols Covered
-                                        </span>
-                                    }
-                                    value="100+"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </BlurFade>
-            </div>
-        </section>
-    </GradientWrapper>
-);
-
 const Footer = () => {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -408,7 +107,7 @@ const Footer = () => {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="#"
+                            href="https://x.com/swap_sh"
                             target="_blank"
                             title="Follow us on X"
                             className="transition-colors hover:text-primary"
@@ -424,11 +123,28 @@ const Footer = () => {
 };
 
 export default function Home() {
-    const router = useRouter();
+     const router = useRouter();
 
-    const analyzeWallet = (address: string) => {
-        console.log('Analyzing wallet:', address);
-    };
+     const handleWalletAnalysis = async (address: string) => {
+         try {
+             if (!address) {
+                 console.error('Please enter a wallet address');
+                 return;
+             }
+
+             // Basic Solana address validation
+             if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+                 console.error('Invalid Solana wallet address');
+                 return;
+             }
+
+             // Navigate to the analysis page
+             const encodedAddress = encodeURIComponent(address.trim());
+             await router.push(`/wallet/${encodedAddress}`);
+         } catch (error) {
+             console.error('Navigation error:', error);
+         }
+     };
 
     return (
         <motion.div
@@ -438,14 +154,14 @@ export default function Home() {
             transition={{ duration: 0.5 }}>
             <AiParticlesBackground />
 
-            <Header handleLogin={analyzeWallet} />
+            <Header handleLogin={handleWalletAnalysis} />
 
             <main className="flex-1">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}>
-                    <Hero handleLogin={analyzeWallet} />
+                    <Hero handleLogin={handleWalletAnalysis} />
                     <AIProcessSection />
                     <Features />
                 </motion.div>

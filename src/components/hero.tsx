@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-
 import Image from 'next/image';
-
 import { motion } from 'framer-motion';
 import { BrainIcon, Sparkles, SparklesIcon, WalletIcon } from 'lucide-react';
-
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { RainbowButton } from '@/components/ui/rainbow-button';
+
 
 interface WalletInputProps {
     onSubmit: (address: string) => void;
@@ -17,10 +15,26 @@ interface WalletInputProps {
 const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
     const [address, setAddress] = useState('');
     const [isHovered, setIsHovered] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = (e: React.FormEvent) => {
+
+        console.log('subnit clicked');
         e.preventDefault();
-        onSubmit(address);
+        setError('');
+
+        // Validate address format
+        if (!address) {
+            setError('Please enter a wallet address');
+            return;
+        }
+
+        if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+            setError('Invalid Solana wallet address format');
+            return;
+        }
+
+        onSubmit(address.trim());
     };
 
     return (
@@ -35,17 +49,20 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
                 whileHover={{ scale: 1.02 }}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}>
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3">
                     <div className="relative flex-1">
                         <input
                             type="text"
                             placeholder="Enter Solana wallet address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            className="h-12 w-full rounded-lg border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            className={`h-12 w-full rounded-lg border ${
+                                error ? 'border-red-500' : 'border-border'
+                            } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
                         />
                         <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                     </div>
+                    {error && <p className="text-sm text-red-500">{error}</p>}
                     <RainbowButton
                         type="submit"
                         className="h-12 px-6 text-base transition-all duration-300 hover:scale-105">
