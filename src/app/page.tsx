@@ -1,20 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
-
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
-
-
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from 'lucide-react';
-
-
-
 import AIProcessSection from '@/components/ai-process';
 import Features from '@/components/features-section';
 import Hero from '@/components/hero';
@@ -22,6 +13,7 @@ import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import BlurFade from '@/components/ui/blur-fade';
 import { Button } from '@/components/ui/button';
+import { useTradingData } from './wallet/[address]/api/usePolling';
 
 
 const Header = ({
@@ -48,9 +40,8 @@ const Header = ({
                 transition={{ type: 'spring', stiffness: 100 }}>
                 <div className="mx-auto max-w-6xl px-4 py-4">
                     <motion.div
-                        className={`rounded-xl border border-border/50 ${
-                            scrolled ? 'bg-background/80' : 'bg-muted/70'
-                        } shadow-lg backdrop-blur-md transition-all duration-300`}
+                        className={`rounded-xl border border-border/50 ${scrolled ? 'bg-background/80' : 'bg-muted/70'
+                            } shadow-lg backdrop-blur-md transition-all duration-300`}
                         animate={{
                             borderColor: scrolled
                                 ? 'rgba(255,255,255,0.2)'
@@ -123,28 +114,37 @@ const Footer = () => {
 };
 
 export default function Home() {
-     const router = useRouter();
+    const router = useRouter();
 
-     const handleWalletAnalysis = async (address: string) => {
-         try {
-             if (!address) {
-                 console.error('Please enter a wallet address');
-                 return;
-             }
+    const { enqueueTask } = useTradingData();
 
-             // Basic Solana address validation
-             if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
-                 console.error('Invalid Solana wallet address');
-                 return;
-             }
+    const handleWalletAnalysis = async (address: string) => {
+        try {
+            if (!address) {
+                console.error('Please enter a wallet address');
+                return;
+            }
 
-             // Navigate to the analysis page
-             const encodedAddress = encodeURIComponent(address.trim());
-             await router.push(`/wallet/${encodedAddress}`);
-         } catch (error) {
-             console.error('Navigation error:', error);
-         }
-     };
+            // Basic Solana address validation
+            if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+                console.error('Invalid Solana wallet address');
+                return;
+            }
+
+            // Call the mutation with the wallet address
+            await enqueueTask.mutate(address, {
+                onError: (error) => {
+                    console.error('failed to fetch, reason:', error.message);
+                },
+            });
+
+            // Navigate to the analysis page
+            const encodedAddress = encodeURIComponent(address.trim());
+            await router.push(`/wallet/${encodedAddress}`);
+        } catch (error) {
+            console.error('Navigation error:', error);
+        }
+    };
 
     return (
         <motion.div

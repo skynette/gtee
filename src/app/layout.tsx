@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 
 import './globals.css';
+import QueryProvider from './provider';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -40,8 +41,10 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange>
                     <main className="overflow-hidden md:overflow-visible">
-                        {children}
-                        <Toaster />
+                        <QueryProvider>
+                            {children}
+                            <Toaster />
+                        </QueryProvider>
                     </main>
                 </ThemeProvider>
             </body>
