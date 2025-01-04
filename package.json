@@ -11,6 +11,7 @@
         "format:check": "prettier --check \"**/*.{ts,tsx,md,json,js,jsx}\""
     },
     "dependencies": {
+        "@google/generative-ai": "^0.21.0",
         "@radix-ui/react-accordion": "^1.2.2",
         "@radix-ui/react-alert-dialog": "^1.1.4",
         "@radix-ui/react-avatar": "^1.1.2",
@@ -26,8 +27,7 @@
         "@radix-ui/react-tooltip": "^1.1.6",
         "@remixicon/react": "^4.6.0",
         "@solana/web3.js": "^1.98.0",
-        "@tensorflow/tfjs": "^4.22.0",
-        "@xenova/transformers": "^2.17.2",
+        "@solflare-wallet/utl-sdk": "^1.4.0",
         "bs58": "^6.0.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -44,8 +44,7 @@
         "sonner": "^1.7.1",
         "tailwind-merge": "^2.5.5",
         "tailwindcss-animate": "^1.0.7",
-        "tsparticles-slim": "^2.12.0",
-        "zustand": "^5.0.2"
+        "tsparticles-slim": "^2.12.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",
@@ -62,10 +61,6 @@
         "tailwind-scrollbar": "^3.1.0",
         "tailwindcss": "^3.4.17",
         "typescript": "^5.7.2"
-    },
-    "browser": {
-        "onnxruntime-node": false,
-        "@xenova/transformers": false
     },
     "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
 }
