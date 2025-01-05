@@ -8,9 +8,11 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-
-
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Allow all methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allow common headers
+}));
 // Routes
 app.get('/test', (req, res) => {
     res.send('API is working');
