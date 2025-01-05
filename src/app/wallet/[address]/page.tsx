@@ -37,33 +37,34 @@ export default function DashboardPage() {
 
     // Retrieve executionId from localStorage
     const executionId = localStorage.getItem("executionId");
+    console.log("getting, exec ID", executionId)
 
     // Polling query for task status
     const taskQuery = useQuery<TaskStatusResponse, Error>(
         ["taskStatus", executionId],
         () => getTradingDataTask(executionId as string),
         {
-            enabled: !!address,
-            refetchInterval: (data: TaskStatusResponse | undefined) =>
-                data && data.data && !data.data.is_execution_finished ? 20000 : false,
+            enabled: !!address && !!executionId,
+            refetchInterval: (data: TaskStatusResponse | undefined) => {
+                if (!data?.data || data.data.state !== "QUERY_STATE_COMPLETED") {
+                    return 60000;
+                }
+                return false;
+            },
             refetchOnMount: false,
-            // cacheTime: 100000,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
             onSuccess: (data: TaskStatusResponse) => {
-                if (data.data.is_execution_finished) {
+                if (data.data.state === "QUERY_STATE_COMPLETED") {
                     queryClient.invalidateQueries(["taskStatus"]);
+                    queryClient.cancelQueries(["taskStatus", executionId]);
                 }
             },
-            onError: () => {
-            }
         }
     );
 
-    // Combine isLoading and isFetching for continuous loading state
-    const { isLoading, isFetching, isError, data } = taskQuery;
+    const { data } = taskQuery;
     console.log("exec state", data?.data.state)
-
-    // Combine isLoading and isFetching for continuous loading state
-    const isLoadingState = isLoading || isFetching;
 
     if (!address)
         return (
@@ -83,7 +84,11 @@ export default function DashboardPage() {
     }
 
     if (data?.data.state !== "QUERY_STATE_COMPLETED") {
-        return <LoadingState />;
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
+                <LoadingState />
+            </div>
+        );
     }
 
     const formattedData: FormattedData = formatTradingData(data);
@@ -236,33 +241,49 @@ export default function DashboardPage() {
                 <Card className="lg:col-span-2 p-6">
                     <h3 className="mb-4 text-lg font-semibold">Trading Analysis</h3>
                     <div className="space-y-4">
-                        {analysis?.improvements.map((improvement, index) => (
-                            <div key={index} className="space-y-2">
-                                <h4 className="font-medium">{improvement.category}</h4>
-                                <ul className="list-disc pl-4 space-y-1">
-                                    {improvement.recommendations.map((rec, idx) => (
-                                        <li key={idx} className="text-sm text-muted-foreground">
-                                            {rec}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
+                        {analysis.improvements.length > 0 ? (
+                            analysis.improvements.map((improvement, index) => (
+                                <div key={index} className="space-y-2">
+                                    <h4 className="font-medium">{improvement.category}</h4>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        {improvement.recommendations.map((rec, idx) => (
+                                            <li key={idx} className="text-sm text-muted-foreground">
+                                                {rec}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground">
+                                No trading analysis available
+                            </p>
+                        )}
                     </div>
                 </Card>
 
                 <Card className="p-6">
                     <h3 className="mb-4 text-lg font-semibold">Risk Warnings</h3>
                     <div className="space-y-4">
-                        {analysis?.mistakes.map((mistake, index) => (
-                            <WarningItem
-                                key={index}
-                                warning={mistake.description}
-                            />
-                        ))}
+                        {analysis.mistakes.length > 0 ? (
+                            analysis.mistakes.map((mistake, index) => (
+                                <div key={index} className="space-y-2">
+                                    <WarningItem warning={mistake.description} />
+                                    {mistake.severity === "high" && (
+                                        <span className="inline-block rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">
+                                            High Risk
+                                        </span>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-sm text-muted-foreground">
+                                No risk warnings available
+                            </p>
+                        )}
                     </div>
                 </Card>
             </div>
-        </div>
+        </div >
     );
 }

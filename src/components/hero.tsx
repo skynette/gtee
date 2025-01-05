@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -10,9 +12,10 @@ import { RainbowButton } from '@/components/ui/rainbow-button';
 
 interface WalletInputProps {
     onSubmit: (address: string) => void;
+    isAnalyzing?: boolean;
 }
 
-const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
+const WalletInput: React.FC<WalletInputProps> = ({ onSubmit, isAnalyzing = false }) => {
     const [address, setAddress] = useState('');
     const [isHovered, setIsHovered] = useState(false);
     const [error, setError] = useState('');
@@ -56,21 +59,48 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
                             placeholder="Enter Solana wallet address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            className={`h-12 w-full rounded-lg border ${
-                                error ? 'border-red-500' : 'border-border'
-                            } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                            className={`h-12 w-full rounded-lg border ${error ? 'border-red-500' : 'border-border'
+                                } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
                         />
                         <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                     </div>
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <RainbowButton
                         type="submit"
-                        className="h-12 px-6 text-base transition-all duration-300 hover:scale-105">
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Analyze
+                        disabled={isAnalyzing}
+                        className={`h-12 px-6 text-base transition-all duration-300 ${isAnalyzing ? 'cursor-not-allowed opacity-80' : 'hover:scale-105'
+                            }`}>
+                        {isAnalyzing ? (
+                            <>
+                                <svg
+                                    className="mr-2 h-4 w-4 animate-spin"
+                                    viewBox="0 0 24 24">
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        fill="none"
+                                    />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    />
+                                </svg>
+                                Analyzing...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                Analyze
+                            </>
+                        )}
                     </RainbowButton>
                 </div>
-                {isHovered && (
+                {isHovered && !isAnalyzing && (
                     <BorderBeam
                         size={300}
                         duration={10}
@@ -137,9 +167,10 @@ const MetricsPreview = () => {
 
 interface HeroProps {
     handleLogin: (address: string) => void;
+    isAnalyzing?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
+const Hero: React.FC<HeroProps> = ({ handleLogin, isAnalyzing=false }) => (
     <section className="relative pt-24">
         <div className="mx-auto grid max-w-screen-xl gap-16 px-6 lg:grid-cols-2">
             <BlurFade
@@ -181,7 +212,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                     </p>
 
                     <div className="mt-10">
-                        <WalletInput onSubmit={handleLogin} />
+                        <WalletInput onSubmit={handleLogin} isAnalyzing={isAnalyzing} />
                     </div>
                 </div>
 
@@ -200,7 +231,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                         className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm">
                         <div className="relative aspect-square w-full">
                             <Image
-                                src="/api/placeholder/800/800"
+                                src="/images/banner.png"
                                 alt="AI Analytics Dashboard"
                                 layout="fill"
                                 className="object-cover"

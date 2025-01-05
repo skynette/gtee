@@ -4,7 +4,7 @@ import { Loader2Icon } from "lucide-react";
 
 function LoadingState() {
     return (
-        <div className="min-h-screen bg-background p-6">
+        <div className="w-full">
             <Card className="mx-auto max-w-2xl p-8">
                 <div className="flex flex-col items-center justify-center space-y-4">
                     <div className="relative">
@@ -25,7 +25,7 @@ function LoadingState() {
                     </div>
                     <div className="space-y-2 text-center">
                         <p className="text-sm text-muted-foreground">
-                            We're processing:
+                            We are processing:
                         </p>
                         <div className="space-y-1">
                             {['Transaction History', 'Token Performance', 'Risk Analysis', 'Market Data'].map((item, index) => (

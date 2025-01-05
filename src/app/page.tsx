@@ -115,7 +115,6 @@ const Footer = () => {
 
 export default function Home() {
     const router = useRouter();
-
     const { enqueueTask } = useTradingData();
 
     const handleWalletAnalysis = async (address: string) => {
@@ -146,6 +145,7 @@ export default function Home() {
         }
     };
 
+
     return (
         <motion.div
             className="flex min-h-screen flex-col"
@@ -161,7 +161,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}>
-                    <Hero handleLogin={handleWalletAnalysis} />
+                    <Hero handleLogin={handleWalletAnalysis} isAnalyzing={enqueueTask.isLoading} />
                     <AIProcessSection />
                     <Features />
                 </motion.div>
