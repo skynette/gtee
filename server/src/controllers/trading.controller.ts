@@ -21,6 +21,7 @@ export const enqueueTradingDataTask = async (req: Request, res: Response) => {
 
         res.json({ success: true, data: tradingData });
     } catch (error) {
+        console.log("error in enquing task", error)
         res.status(500).json({ success: false, error: "an error occurred" });
     }
 };

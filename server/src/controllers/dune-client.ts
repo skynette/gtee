@@ -23,11 +23,12 @@ export class DuneAPIClient {
                 query_parameters: {
                     wallet_address: walletAddress,
                 },
-                performance: 'large',
+                performance: 'medium',
             });
             console.log("execute: query", response.data)
             return response.data;
         } catch (error) {
+            console.log("error execute query", error)
             throw new Error(`Failed to execute query: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
