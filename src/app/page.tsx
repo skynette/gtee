@@ -22,6 +22,7 @@ const Header = ({
     handleLogin: (address: string) => void;
 }) => {
     const [scrolled, setScrolled] = useState(false);
+    const router = useRouter()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -62,7 +63,7 @@ const Header = ({
                                     <Button
                                         variant="outline"
                                         className="h-9 rounded-lg bg-primary/10 px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                                        onClick={() => handleLogin('')}>
+                                        onClick={() => router.push('https://solana-wallet-analyzer.gitbook.io/docs')}>
                                         <SparklesIcon className="mr-2 h-4 w-4" />
                                         Docs
                                     </Button>
