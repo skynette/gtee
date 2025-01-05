@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | Web3 Test',
-        default: 'A test for a web3 project',
+        template: 'AI Solana Wallet Analyzer',
+        default: 'AI Solana Wallet Analyzer',
     },
 };
 
