@@ -9,17 +9,12 @@ const nextConfig = {
             },
         ],
     },
-    webpack: (config: any, { isServer }: { isServer: boolean }) => {
+    webpack: (config: { module: { rules: { test: RegExp; type: string; }[]; }; resolve: { fallback: any; }; }, { isServer }: any) => {
         // Add JSON rule
         config.module.rules.push({
             test: /\.json$/,
             type: 'json',
         });
-
-        // Ignore server directory
-        config.watchOptions = {
-            ignored: ['**/server/**', ...(config.watchOptions?.ignored || [])]
-        };
 
         // Handle node modules and polyfills
         if (!isServer) {
