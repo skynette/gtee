@@ -20,7 +20,7 @@ function LoadingState() {
                                 style={{ width: '0%' }} />
                         </div>
                         <p className="text-center text-sm text-muted-foreground">
-                            This may take up to 5 minutes
+                            This may take up to 3 minutes
                         </p>
                     </div>
                     <div className="space-y-2 text-center">

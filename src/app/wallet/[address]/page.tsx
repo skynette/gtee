@@ -10,33 +10,34 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import DexRow from './components/dexrow';
 import MetricCard from './components/metrics-card';
 import TokenRow from './components/token-row';
 import PerformanceChart from './components/performance';
 import WarningItem from './components/warning';
 import ErrorState from './components/error';
 import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getTradingDataTask } from './api/api';
 import { useQuery, useQueryClient } from 'react-query';
 import { TaskStatusResponse } from '@/lib/types/responses';
 import LoadingState from './components/loading-state';
 import { FormattedData, formatTradingData } from './api/data-helpers';
 import PositionCard from './components/position-card';
+import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
     const params = useParams();
     const queryClient = useQueryClient();
 
+    
     const address =
-        typeof params?.address === 'string'
-            ? decodeURIComponent(params.address)
-            : '';
-
-
+    typeof params?.address === 'string'
+    ? decodeURIComponent(params.address)
+    : '';
+    
+    
     // Retrieve executionId from localStorage
-    const executionId = localStorage.getItem("executionId");
+    const [executionId, setExecutionId] = useState<string | null>(null)
+    // const executionId = localStorage.getItem("executionId");
     console.log("getting, exec ID", executionId)
 
     // Polling query for task status
@@ -51,7 +52,7 @@ export default function DashboardPage() {
                 }
                 return false;
             },
-            refetchOnMount: false,
+            refetchOnMount: true,
             refetchOnWindowFocus: false,
             refetchOnReconnect: false,
             onSuccess: (data: TaskStatusResponse) => {
@@ -63,16 +64,15 @@ export default function DashboardPage() {
         }
     );
 
+    useEffect(() => {
+        const storedExecutionId = typeof window !== 'undefined' 
+            ? localStorage.getItem("executionId")
+            : null;
+        setExecutionId(storedExecutionId);
+    }, []);
+
     const { data } = taskQuery;
     console.log("exec state", data?.data.state)
-
-    if (!address)
-        return (
-            <ErrorState
-                error={new Error('Invalid wallet address')}
-                onRetry={() => (window.location.href = '/')}
-            />
-        );
 
     if (!address) {
         return (
@@ -83,7 +83,7 @@ export default function DashboardPage() {
         );
     }
 
-    if (data?.data.state !== "QUERY_STATE_COMPLETED") {
+    if (!executionId || data?.data.state !== "QUERY_STATE_COMPLETED") {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
                 <LoadingState />

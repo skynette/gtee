@@ -170,7 +170,7 @@ interface HeroProps {
     isAnalyzing?: boolean;
 }
 
-const Hero: React.FC<HeroProps> = ({ handleLogin, isAnalyzing=false }) => (
+const Hero: React.FC<HeroProps> = ({ handleLogin, isAnalyzing = false }) => (
     <section className="relative pt-24">
         <div className="mx-auto grid max-w-screen-xl gap-16 px-6 lg:grid-cols-2">
             <BlurFade
@@ -229,12 +229,13 @@ const Hero: React.FC<HeroProps> = ({ handleLogin, isAnalyzing=false }) => (
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5, duration: 0.5 }}
                         className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm">
-                        <div className="relative aspect-square w-full">
+                        <div className="relative w-full">
                             <Image
                                 src="/images/banner.png"
                                 alt="AI Analytics Dashboard"
-                                layout="fill"
-                                className="object-cover"
+                                width={1200}
+                                height={675}
+                                className="w-full h-auto"
                                 priority
                             />
                             {/* Gradient overlay */}

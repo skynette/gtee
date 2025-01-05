@@ -23,7 +23,7 @@ export class DuneAPIClient {
                 query_parameters: {
                     wallet_address: walletAddress,
                 },
-                performance: 'medium',
+                performance: 'large',
             });
             console.log("execute: query", response.data)
             return response.data;
