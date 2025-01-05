@@ -21,7 +21,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getTradingDataTask } from './api/api';
 import { useQuery, useQueryClient } from 'react-query';
 import { TaskStatusResponse } from '@/lib/types/responses';
-import { useEffect, useState } from 'react';
+import LoadingState from './components/loading-state';
+import { FormattedData, formatTradingData } from './api/data-helpers';
+import PositionCard from './components/position-card';
 
 export default function DashboardPage() {
     const params = useParams();
@@ -32,7 +34,6 @@ export default function DashboardPage() {
             ? decodeURIComponent(params.address)
             : '';
 
-    const [loading, setLoading] = useState(false); // Initial loading state set to true
 
     // Retrieve executionId from localStorage
     const executionId = localStorage.getItem("executionId");
@@ -42,41 +43,27 @@ export default function DashboardPage() {
         ["taskStatus", executionId],
         () => getTradingDataTask(executionId as string),
         {
-            enabled: !!executionId,
+            enabled: !!address,
             refetchInterval: (data: TaskStatusResponse | undefined) =>
                 data && data.data && !data.data.is_execution_finished ? 20000 : false,
             refetchOnMount: false,
-            cacheTime: 100000,
+            // cacheTime: 100000,
             onSuccess: (data: TaskStatusResponse) => {
                 if (data.data.is_execution_finished) {
                     queryClient.invalidateQueries(["taskStatus"]);
-
-                    // Clear executionId from localStorage once the task is complete
-                    localStorage.removeItem("executionId");
-
-                    // Set loading to false when data is available
-                    setLoading(false);
                 }
             },
             onError: () => {
-                // Handle error and set loading to false
-                setLoading(false);
             }
         }
     );
 
     // Combine isLoading and isFetching for continuous loading state
     const { isLoading, isFetching, isError, data } = taskQuery;
+    console.log("exec state", data?.data.state)
 
     // Combine isLoading and isFetching for continuous loading state
-    const isLoadingState = isLoading || isFetching || loading;
-
-    useEffect(() => {
-        const storedExecutionId = localStorage.getItem("executionId");
-        if (storedExecutionId) {
-            setLoading(true);
-        }
-    }, []);
+    const isLoadingState = isLoading || isFetching;
 
     if (!address)
         return (
@@ -86,6 +73,32 @@ export default function DashboardPage() {
             />
         );
 
+    if (!address) {
+        return (
+            <ErrorState
+                error={new Error('Invalid wallet address')}
+                onRetry={() => (window.location.href = '/')}
+            />
+        );
+    }
+
+    if (data?.data.state !== "QUERY_STATE_COMPLETED") {
+        return <LoadingState />;
+    }
+
+    const formattedData: FormattedData = formatTradingData(data);
+    const {
+        trades,
+        portfolio_metrics,
+        summary_metrics,
+        chart_data,
+        analysis
+    } = formattedData;
+
+
+    const activePositions = trades?.filter(trade => trade.status === "OPEN") || [];
+    const closedPositions = trades?.filter(trade => trade.status === "CLOSED") || [];
+
     return (
         <div className="min-h-screen bg-background p-6">
             {/* Header with Overview */}
@@ -93,16 +106,16 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">
-                            Wallet Analytics
+                            Trading Analytics
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            0x1234...abcd
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                            Account Age: 365 days
+                            {address}
                         </p>
                     </div>
-                    <Button className="flex items-center gap-2">
+                    <Button
+                        className="flex items-center gap-2"
+                        onClick={() => queryClient.invalidateQueries(["taskStatus"])}
+                    >
                         <RefreshCcwIcon className="h-4 w-4" />
                         Refresh
                     </Button>
@@ -111,160 +124,144 @@ export default function DashboardPage() {
 
             {/* Key Metrics Grid */}
             <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {isLoadingState ? (
-                    Array.from({ length: 4 }).map((_, index) => (
-                        <Skeleton key={index} className="h-24 w-full" />
-                    ))
-                ) : (
-                    <>
-                        <MetricCard
-                            title="Portfolio Value"
-                            value={"$10,000"}
-                            icon={WalletIcon}
-                            trend={{
-                                value: 5.2,
-                                positive: true,
-                            }}
-                            subtitle={`5 Tokens`}
-                        />
-                        <MetricCard
-                            title="Trading Activity"
-                            value={`50 Swaps`}
-                            icon={ActivityIcon}
-                            trend={{
-                                value: 12,
-                                positive: true,
-                            }}
-                            subtitle={`$15,000 Volume`}
-                        />
-                        <MetricCard
-                            title="Performance"
-                            value={`60% Win Rate`}
-                            icon={BarChart3Icon}
-                            trend={{
-                                value: 3.5,
-                                positive: true,
-                            }}
-                            subtitle={`3 Win Streak`}
-                        />
-                        <MetricCard
-                            title="Risk Profile"
-                            value={`70/100`}
-                            icon={AlertCircleIcon}
-                            trend={{
-                                value: 0.08,
-                                positive: false,
-                                neutral: true,
-                            }}
-                            subtitle={`Low Concentration`}
-                        />
-                    </>
-                )}
+                <MetricCard
+                    title="Portfolio Value"
+                    value={`$${summary_metrics?.totalPnL.toLocaleString()}`}
+                    icon={WalletIcon}
+                    trend={{
+                        value: portfolio_metrics?.average_roi || 0,
+                        positive: portfolio_metrics?.average_roi > 0,
+                    }}
+                    subtitle={`${summary_metrics?.totalTrades} Total Trades`}
+                />
+                <MetricCard
+                    title="Win Rate"
+                    value={`${(summary_metrics?.winRate * 100).toFixed(1)}%`}
+                    icon={ActivityIcon}
+                    trend={{
+                        value: summary_metrics?.activePositions || 0,
+                        positive: true,
+                        neutral: true
+                    }}
+                    subtitle={`${summary_metrics?.activePositions} Active Positions`}
+                />
+                <MetricCard
+                    title="Performance"
+                    value={`${portfolio_metrics?.sharpe_ratio.toFixed(2)} SR`}
+                    icon={BarChart3Icon}
+                    trend={{
+                        value: portfolio_metrics?.max_drawdown,
+                        positive: false,
+                    }}
+                    subtitle={`Max Drawdown: ${portfolio_metrics?.max_drawdown.toFixed(2)}%`}
+                />
+                <MetricCard
+                    title="Avg Holding Time"
+                    value={`${Math.floor(summary_metrics?.avgHoldingTime || 0)}h`}
+                    icon={AlertCircleIcon}
+                    trend={{
+                        value: 0,
+                        neutral: true
+                    }}
+                    subtitle={`${activePositions.length} Open Trades`}
+                />
             </div>
 
-            {/* Performance and Trading Statistics */}
+            {/* Active and Closed Positions */}
             <div className="mb-8 grid gap-6 lg:grid-cols-2">
-                {isLoadingState ? (
-                    <Skeleton className="h-[300px] w-full" />
-                ) : (
-                    <Card className="p-6">
-                        <h3 className="mb-4 text-lg font-semibold">
-                            Performance Over Time
-                        </h3>
-                        <div className="h-[300px]">
-                            <PerformanceChart
-                                data={[{ date: "2024-01-01", value: 1000 }]}
+                <Card className="p-6">
+                    <h3 className="mb-4 text-lg font-semibold">
+                        Active Positions ({activePositions.length})
+                    </h3>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                        {activePositions.map((trade, index) => (
+                            <PositionCard
+                                key={trade.token}
+                                rank={index + 1}
+                                trade={trade}
+                                totalPortfolioValue={summary_metrics.totalPnL}
                             />
-                        </div>
-                    </Card>
-                )}
+                        ))}
+                    </div>
+                </Card>
 
-                {isLoadingState ? (
-                    <Skeleton className="h-[300px] w-full" />
-                ) : (
-                    <Card className="p-6">
-                        <h3 className="mb-4 text-lg font-semibold">DEX Activity</h3>
-                        <div className="space-y-4">
-                            <DexRow
-                                rank={1}
-                                dex="Uniswap"
-                                efficiency={95}
-                                volume={10000}
+                <Card className="p-6">
+                    <h3 className="mb-4 text-lg font-semibold">
+                        Closed Positions ({closedPositions.length})
+                    </h3>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                        {closedPositions.map((trade, index) => (
+                            <PositionCard
+                                key={trade.token}
+                                rank={index + 1}
+                                trade={trade}
+                                totalPortfolioValue={summary_metrics.totalPnL}
                             />
-                            <DexRow
-                                rank={2}
-                                dex="Sushiswap"
-                                efficiency={80}
-                                volume={10000}
-                            />
-                        </div>
-                    </Card>
-                )}
+                        ))}
+                    </div>
+                </Card>
             </div>
 
-            {/* Token Holdings and Risk Analysis */}
+            {/* Performance and Statistics */}
+            <div className="mb-8 grid gap-6 lg:grid-cols-2">
+                <Card className="p-6">
+                    <h3 className="mb-4 text-lg font-semibold">
+                        Performance Distribution
+                    </h3>
+                    <div className="h-[300px]">
+                        <PerformanceChart data={chart_data?.positionSizeVsReturns || []} />
+                    </div>
+                </Card>
+                <Card className="p-6">
+                    <h3 className="mb-4 text-lg font-semibold">Active Positions</h3>
+                    <div className="space-y-4">
+                        {activePositions.map((trade, index) => (
+                            <TokenRow
+                                key={trade.token}
+                                rank={index + 1}
+                                token={{
+                                    symbol: trade.token,
+                                    percentage: (trade.entry.amount * trade.entry.price) / summary_metrics?.totalPnL * 100,
+                                    value: trade.entry.amount * trade.entry.price,
+                                    profitLoss: trade.metrics.roi
+                                }}
+                            />
+                        ))}
+                    </div>
+                </Card>
+            </div>
+
+            {/* Analysis and Risk Warnings */}
             <div className="grid gap-6 lg:grid-cols-3">
-                {isLoadingState ? (
-                    <Skeleton className="h-60 w-full" />
-                ) : (
-                    <div className="lg:col-span-2">
-                        <Card className="p-6">
-                            <h3 className="mb-4 text-lg font-semibold">
-                                Token Holdings
-                            </h3>
-                            <div className="space-y-4">
-                                <TokenRow
-                                    rank={1}
-                                    token={{
-                                        symbol: "ETH",
-                                        percentage: 50,
-                                        value: 10000,
-                                        profitLoss: 10,
-                                    }}
-                                />
-                                <TokenRow
-                                    rank={2}
-                                    token={{
-                                        symbol: "BTC",
-                                        percentage: 30,
-                                        value: 3000,
-                                        profitLoss: 15,
-                                    }}
-                                />
+                <Card className="lg:col-span-2 p-6">
+                    <h3 className="mb-4 text-lg font-semibold">Trading Analysis</h3>
+                    <div className="space-y-4">
+                        {analysis?.improvements.map((improvement, index) => (
+                            <div key={index} className="space-y-2">
+                                <h4 className="font-medium">{improvement.category}</h4>
+                                <ul className="list-disc pl-4 space-y-1">
+                                    {improvement.recommendations.map((rec, idx) => (
+                                        <li key={idx} className="text-sm text-muted-foreground">
+                                            {rec}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                        </Card>
+                        ))}
                     </div>
-                )}
+                </Card>
 
-                {isLoadingState ? (
-                    <Skeleton className="h-60 w-full" />
-                ) : (
-                    <Card className="p-6">
-                        <h3 className="mb-4 text-lg font-semibold">Risk Analysis</h3>
-                        <div className="space-y-4">
-                            <WarningItem warning="High exposure to volatile assets" />
-                            <WarningItem warning="Low diversification" />
-                        </div>
-                    </Card>
-                )}
-            </div>
-
-            {/* Activity Section */}
-            <div className="grid gap-6 lg:grid-cols-3">
-                {isLoadingState ? (
-                    <Skeleton className="h-60 w-full" />
-                ) : (
-                    <div className="lg:col-span-2">
-                        <Card className="p-6">
-                            <h3 className="mb-4 text-lg font-semibold">
-                                Recent Activity
-                            </h3>
-                            {/* <ActivityList
-                                metrics={[]}
-                            /> */}
-                        </Card>
+                <Card className="p-6">
+                    <h3 className="mb-4 text-lg font-semibold">Risk Warnings</h3>
+                    <div className="space-y-4">
+                        {analysis?.mistakes.map((mistake, index) => (
+                            <WarningItem
+                                key={index}
+                                warning={mistake.description}
+                            />
+                        ))}
                     </div>
-                )}
+                </Card>
             </div>
         </div>
     );

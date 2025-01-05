@@ -20,6 +20,7 @@
     "ioredis": "^5.4.2",
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.1",
+    "openai": "^4.77.3",
     "uuid": "^11.0.3"
   },
   "devDependencies": {

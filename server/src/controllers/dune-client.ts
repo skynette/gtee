@@ -1,55 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-
-// Types for API responses
-interface ExecutionResponse {
-    execution_id: string;
-    state: string;
-}
-
-interface ExecutionStatus {
-    execution_id: string;
-    query_id: number;
-    is_execution_finished: boolean;
-    state: string;
-    submitted_at: string;
-    expires_at: string;
-    execution_started_at: string;
-    execution_ended_at: string;
-    result_metadata: {
-        column_names: string[];
-        column_types: string[];
-        row_count: number;
-        result_set_bytes: number;
-        total_row_count: number;
-        total_result_set_bytes: number;
-        datapoint_count: number;
-        pending_time_millis: number;
-        execution_time_millis: number;
-    };
-}
-
-interface TokenData {
-    token_address: string;
-    buy: number | null;
-    sell: number | null;
-    pnl: number | null;
-    usd_balance: number | null;
-    total_pnl: number | null;
-    token_balance: number | null;
-    initial_buy_price: number | null;
-    latest_price: number | null;
-    latest_block_time: string | null;
-}
-
-interface ExecutionResults {
-    execution_id: string;
-    query_id: number;
-    state: string;
-    result: {
-        rows: TokenData[];
-        metadata: ExecutionStatus['result_metadata'];
-    };
-}
+import { ExecutionResponse, ExecutionResults, ExecutionStatus } from '../types/types';
 
 export class DuneAPIClient {
     private readonly client: AxiosInstance;

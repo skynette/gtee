@@ -43,4 +43,85 @@ export interface TaskStatusResponse {
             };
         };
     };
+    transformedData?: {
+        trades: Array<{
+            token: string;
+            entry: {
+                price: number;
+                amount: number;
+                timestamp: string;
+                total_cost: number;
+            };
+            exit: {
+                price: number | null;
+                amount: number | null;
+                timestamp: string | null;
+                total_return: number | null;
+            };
+            metrics: {
+                pnl: number;
+                roi: number;
+                holding_time_hours: number;
+                max_drawdown: number;
+            };
+            status: "OPEN" | "CLOSED";
+        }>;
+        portfolio_metrics: {
+            total_trades: number;
+            win_rate: number;
+            average_roi: number;
+            sharpe_ratio: number;
+            max_drawdown: number;
+        };
+        summary_metrics: {
+            totalTrades: number;
+            winRate: number;
+            totalPnL: number;
+            activePositions: number;
+            avgHoldingTime: number;
+            biggestWin: {
+                token: string;
+                amount: number;
+            };
+            biggestLoss: {
+                token: string;
+                amount: number;
+            };
+        };
+        chart_data: {
+            pnlDistribution: Array<{
+                token: string;
+                pnl: number;
+                color: string;
+            }>;
+            positionSizeVsReturns: Array<{
+                size: number;
+                return: number;
+            }>;
+            timeAnalysis: Array<{
+                timeFrame: string;
+                winRate: number;
+            }>;
+            riskMetrics: Array<{
+                metric: string;
+                value: number;
+            }>;
+        };
+    };
+    analysis?: {
+        mistakes: Array<{
+            title: string;
+            description: string;
+            severity: "high" | "medium" | "low";
+        }>;
+        improvements: Array<{
+            category: string;
+            recommendations: string[];
+        }>;
+        patterns: {
+            winning: string[];
+            losing: string[];
+            general: string[];
+        };
+    };
 }

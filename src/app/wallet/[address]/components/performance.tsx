@@ -1,7 +1,7 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 
-function PerformanceChart({ data }: { data: any[] }) {
+function PerformanceChart({ data }: { data: Array<{ size: number; return: number }> }) {
     if (!data?.length) {
         return (
             <div className="flex h-full items-center justify-center">
@@ -12,23 +12,14 @@ function PerformanceChart({ data }: { data: any[] }) {
         );
     }
 
-    // Process data to show cumulative performance
-    const processedData = data.map((point, index) => ({
-        ...point,
-        date: new Date(point.date).toLocaleDateString(),
-        cumulativeProfitLoss: data
-            .slice(0, index + 1)
-            .reduce((sum, p) => sum + p.profitLoss, 0),
-    }));
-
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={processedData}>
+            <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
                 <XAxis
-                    dataKey="date"
+                    dataKey="size"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => value.split(',')[0]}
+                    tickFormatter={(value) => `$${value.toFixed(2)}`}
                 />
                 <YAxis
                     tick={{ fontSize: 12 }}
@@ -36,13 +27,11 @@ function PerformanceChart({ data }: { data: any[] }) {
                 />
                 <Tooltip
                     formatter={(value: number) => `${value.toFixed(2)}%`}
-                    labelFormatter={(label) =>
-                        new Date(label).toLocaleDateString()
-                    }
+                    labelFormatter={(value) => `$${Number(value).toFixed(2)}`}
                 />
                 <Line
                     type="monotone"
-                    dataKey="cumulativeProfitLoss"
+                    dataKey="return"
                     stroke="#8884d8"
                     strokeWidth={2}
                     dot={false}
@@ -51,6 +40,5 @@ function PerformanceChart({ data }: { data: any[] }) {
         </ResponsiveContainer>
     );
 }
-
 
 export default PerformanceChart
