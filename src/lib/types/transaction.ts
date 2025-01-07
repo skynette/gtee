@@ -1,8 +1,10 @@
 // src/lib/types/transaction.ts
 export interface TokenInfo {
     symbol: string;
+    name: string;  // Added name field
     mint: string;
     amount: number;
+    decimals: number;  // Added decimals field
 }
 
 export interface NativeTransfer {
@@ -30,6 +32,7 @@ export interface TransactionData {
     status: 'success' | 'error';
     amount?: number;
     tokenInfo?: TokenInfo;
+    description?: string;  // Added description field
     // Additional fields for analysis
     nativeTransfers?: NativeTransfer[];
     tokenTransfers?: TokenTransfer[];
@@ -39,10 +42,11 @@ export interface TransactionData {
     };
 }
 
+// src/lib/types/transaction.ts
 export interface WalletData {
     balance: number;
     transactions: TransactionData[];
-    tokenBalances: Record<string, number>;
+    tokenBalances: Record<string, TokenInfo>;  // Changed from Record<string, number>
 }
 
 export interface TokenBalance {
