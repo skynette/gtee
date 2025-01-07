@@ -17,6 +17,8 @@ export class HeliusService {
             // First get transaction signatures using RPC endpoint
             const signatures = await this.getTransactionSignatures(address, limit);
 
+            console.log("signaturesRetruned", signatures );
+
             // Then parse those transactions if we have signatures
             if (signatures.length > 0) {
                 const transactions = await this.parseTransactions(signatures);
@@ -36,15 +38,16 @@ export class HeliusService {
     }
 
     private async getTransactionSignatures(address: string, limit: number): Promise<string[]> {
+        const requestId = Math.floor(10000000 + Math.random() * 90000000);
         const rpcBody = {
             jsonrpc: "2.0",
-            id: "1",
+            id: requestId.toString(), // random 8 digit number 
             method: "getSignaturesForAddress",
             params: [
                 address,
                 {
                     limit,
-                    commitment: "confirmed"
+                    commitment: "finalized"
                 }
             ]
         };
@@ -68,12 +71,18 @@ export class HeliusService {
 
             const data = await response.json();
 
+            // console.log("data========",data);
+
             if (data.error) {
                 throw new Error(`RPC error: ${data.error.message}`);
             }
 
             // Extract signatures from the result
-            return data.result.map((item: any) => item.signature);
+
+            const signatues = data.result.map((item: any) => item.signature);
+
+            // console.log("signatues========",signatues);
+            return signatues;
         } catch (error) {
             console.error('Error fetching transaction signatures:', error);
             // Add retry logic for rate limiting
@@ -86,6 +95,8 @@ export class HeliusService {
     }
 
     private async parseTransactions(signatures: string[]): Promise<TransactionData[]> {
+
+        console.log({ signaturesInParse: signatures });
         if (signatures.length === 0) return [];
 
         const url = `${this.baseUrl}/transactions?api-key=${this.apiKey}`;
@@ -127,6 +138,8 @@ export class HeliusService {
                     await new Promise(resolve => setTimeout(resolve, 200));
                 }
             }
+
+            console.log({ allTransactions });
 
             return allTransactions;
         } catch (error) {

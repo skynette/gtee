@@ -13,7 +13,6 @@ import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import BlurFade from '@/components/ui/blur-fade';
 import { Button } from '@/components/ui/button';
-import { useTradingData } from './wallet/[address]/api/usePolling';
 
 
 const Header = ({
@@ -22,7 +21,6 @@ const Header = ({
     handleLogin: (address: string) => void;
 }) => {
     const [scrolled, setScrolled] = useState(false);
-    const router = useRouter()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -41,8 +39,9 @@ const Header = ({
                 transition={{ type: 'spring', stiffness: 100 }}>
                 <div className="mx-auto max-w-6xl px-4 py-4">
                     <motion.div
-                        className={`rounded-xl border border-border/50 ${scrolled ? 'bg-background/80' : 'bg-muted/70'
-                            } shadow-lg backdrop-blur-md transition-all duration-300`}
+                        className={`rounded-xl border border-border/50 ${
+                            scrolled ? 'bg-background/80' : 'bg-muted/70'
+                        } shadow-lg backdrop-blur-md transition-all duration-300`}
                         animate={{
                             borderColor: scrolled
                                 ? 'rgba(255,255,255,0.2)'
@@ -63,7 +62,7 @@ const Header = ({
                                     <Button
                                         variant="outline"
                                         className="h-9 rounded-lg bg-primary/10 px-4 text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
-                                        onClick={() => router.push('https://solana-wallet-analyzer.gitbook.io/docs')}>
+                                        onClick={() => handleLogin('')}>
                                         <SparklesIcon className="mr-2 h-4 w-4" />
                                         Docs
                                     </Button>
@@ -115,37 +114,28 @@ const Footer = () => {
 };
 
 export default function Home() {
-    const router = useRouter();
-    const { enqueueTask } = useTradingData();
+     const router = useRouter();
 
-    const handleWalletAnalysis = async (address: string) => {
-        try {
-            if (!address) {
-                console.error('Please enter a wallet address');
-                return;
-            }
+     const handleWalletAnalysis = async (address: string) => {
+         try {
+             if (!address) {
+                 console.error('Please enter a wallet address');
+                 return;
+             }
 
-            // Basic Solana address validation
-            if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
-                console.error('Invalid Solana wallet address');
-                return;
-            }
+             // Basic Solana address validation
+             if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address)) {
+                 console.error('Invalid Solana wallet address');
+                 return;
+             }
 
-            // Call the mutation with the wallet address
-            await enqueueTask.mutate(address, {
-                onError: (error) => {
-                    console.error('failed to fetch, reason:', error.message);
-                },
-            });
-
-            // Navigate to the analysis page
-            const encodedAddress = encodeURIComponent(address.trim());
-            await router.push(`/wallet/${encodedAddress}`);
-        } catch (error) {
-            console.error('Navigation error:', error);
-        }
-    };
-
+             // Navigate to the analysis page
+             const encodedAddress = encodeURIComponent(address.trim());
+             await router.push(`/wallet/${encodedAddress}`);
+         } catch (error) {
+             console.error('Navigation error:', error);
+         }
+     };
 
     return (
         <motion.div
@@ -162,7 +152,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}>
-                    <Hero handleLogin={handleWalletAnalysis} isAnalyzing={enqueueTask.isLoading} />
+                    <Hero handleLogin={handleWalletAnalysis} />
                     <AIProcessSection />
                     <Features />
                 </motion.div>
