@@ -149,8 +149,8 @@ const generateTradingBehavior = ({ avgVolume, txPerDay, mostActiveHour, volumeTr
             : 'during off-peak hours';
 
     return `The wallet demonstrates a ${tradingStyle} pattern, most active ${timeContext} (${mostActiveHour}:00 UTC). ${volumeTrend === 'increasing'
-            ? 'Recent trading volumes show an upward trend, suggesting growing market confidence'
-            : 'Recent trading volumes indicate a more cautious approach'
+        ? 'Recent trading volumes show an upward trend, suggesting growing market confidence'
+        : 'Recent trading volumes indicate a more cautious approach'
         }. With an average transaction size of ${avgVolume.toFixed(2)} SOL and peak volumes reaching ${maxVolume.toFixed(2)} SOL, ${volatility > 50
             ? 'the trading pattern shows significant volatility, indicating opportunistic trading behavior'
             : 'the consistent transaction sizes suggest a disciplined execution strategy'
@@ -184,8 +184,8 @@ const generateMarketEngagement = ({ totalTransactions, timeSpan, recentTxCount, 
             : 'maintaining consistent engagement';
 
     return `This wallet is ${engagementLevel} in the Solana ecosystem, with ${totalTransactions} transactions across ${timeSpan} days. ${volumeTrend === 'increasing'
-            ? 'Recent activity shows escalating market involvement'
-            : 'Current trading patterns indicate strategic position management'
+        ? 'Recent activity shows escalating market involvement'
+        : 'Current trading patterns indicate strategic position management'
         }. ${timeSpan > 30
             ? 'The extended trading history demonstrates sustained ecosystem participation and deep market understanding.'
             : 'The recent trading history suggests an emerging market presence with evolving strategy development.'
@@ -281,6 +281,8 @@ const tryGeminiAnalysis = async (formattedData: any) => {
     const response = await result.response;
     const analysisText = response.text();
 
+    console.log({ analysisText })
+
     return JSON.parse(analysisText.replace(/```json\n?|\n?```/g, ''));
 };
 
@@ -315,19 +317,19 @@ export async function POST(request: Request) {
             const geminiAnalysis = await tryGeminiAnalysis(formattedData);
             return NextResponse.json(geminiAnalysis);
         } catch (geminiError) {
-            console.log('Gemini failed, trying OpenAI...');
+            console.log('Gemini failed, trying OpenAI...', geminiError);
+            return NextResponse.json({ error: 'Gemini failed' });
+            // try {
+            //     // Try OpenAI as backup
+            //     const openAIAnalysis = await tryOpenAIAnalysis(formattedData);
+            //     return NextResponse.json(openAIAnalysis);
+            // } catch (openAIError) {
+            //     console.log('OpenAI failed, using fallback...');
 
-            try {
-                // Try OpenAI as backup
-                const openAIAnalysis = await tryOpenAIAnalysis(formattedData);
-                return NextResponse.json(openAIAnalysis);
-            } catch (openAIError) {
-                console.log('OpenAI failed, using fallback...');
-
-                // Use fallback if both AI services fail
-                const fallbackAnalysis = generateFallbackAnalysis(formattedData);
-                return NextResponse.json(fallbackAnalysis);
-            }
+            //     // Use fallback if both AI services fail
+            //     const fallbackAnalysis = generateFallbackAnalysis(formattedData);
+            //     return NextResponse.json(fallbackAnalysis);
+            // }
         }
     } catch (error: any) {
         console.error('Analysis error:', error);
