@@ -8,24 +8,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-// import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation"; // Import usePathname for route detection
+import { usePathname } from "next/navigation";
 
 export default function BalanceCard({ SOLBalance }: { SOLBalance: number }) {
   const [solToUsdRate, setSolToUsdRate] = useState<number>(0);
-  const pathname = usePathname(); // Get the current path
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchConversionRate = async () => {
       const now = new Date().getTime();
 
-      // Check if the conversion rate is already cached and it's still valid (within the last hour)
       const cachedRate = localStorage.getItem("solToUsdRate");
       const cachedTimestamp = localStorage.getItem("solToUsdRateTimestamp");
 
       if (cachedRate && cachedTimestamp) {
-        const oneHour = 60 * 60 * 1000; // One hour in milliseconds
+        const oneHour = 60 * 60 * 1000;
         const lastFetched = parseInt(cachedTimestamp, 10);
 
         if (now - lastFetched < oneHour) {
@@ -41,7 +39,6 @@ export default function BalanceCard({ SOLBalance }: { SOLBalance: number }) {
         const data = await response.json();
         const rate = data.solana.usd;
 
-        // Cache the conversion rate with the current timestamp
         localStorage.setItem("solToUsdRate", rate.toString());
         localStorage.setItem("solToUsdRateTimestamp", now.toString());
 
@@ -57,23 +54,21 @@ export default function BalanceCard({ SOLBalance }: { SOLBalance: number }) {
   return (
     <Card
       className={cn(
-        "min-w-[300px] min-h-[250px] lg:min-h-fit card bg-primary rounded-xl"
+        "min-w-[300px] min-h-[250px] lg:min-h-fit card bg-slate-900 rounded-xl border-slate-800"
       )}
     >
       <CardHeader>
-        <CardTitle>Balance</CardTitle>
-        <CardDescription>Current balance in your wallet</CardDescription>
-        {/* Conditionally render WalletMultiButton only if on the /your-wallet page */}
-        {/* {pathname === "/your-wallet" && (
-          <WalletMultiButton className="wallet-adapter-button mt-2" />
-        )} */}
+        <CardTitle className="text-gray-200">Balance</CardTitle>
+        <CardDescription className="text-gray-400">
+          Current balance in your wallet
+        </CardDescription>
       </CardHeader>
       <CardContent className="mt-3">
         <div className="flex h-full items-center justify-between">
-          <div className="text-4xl font-semibold text-primary">
+          <div className="text-4xl font-semibold text-gray-100">
             {SOLBalance.toFixed(2)} SOL
           </div>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-gray-400">
             ≈ ${(SOLBalance * solToUsdRate).toFixed(2)}
           </div>
         </div>
