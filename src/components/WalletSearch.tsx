@@ -1,17 +1,30 @@
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { SearchIcon } from "lucide-react";
-import Moralis from "moralis";
-import BalanceCard from "@/components/balanceCard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import LineChart from "./LineChart";
-import PieChart from "./PieChart";
-import TradingAnalysis from "./TradingAnalysis";
-import TokensTable from "./tokens/tokens-table";
-import TransactionTable from "./transactions/transaction-table";
+import { useEffect, useState } from 'react';
 
+import Image from 'next/image';
+
+import { Connection, PublicKey } from '@solana/web3.js';
+import { motion } from 'framer-motion';
+import { SearchIcon, SparklesIcon, WalletIcon } from 'lucide-react';
+import Moralis from 'moralis';
+
+import BalanceCard from '@/components/balanceCard';
+import BlurFade from '@/components/ui/blur-fade';
+import { BorderBeam } from '@/components/ui/border-beam';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { RainbowButton } from '@/components/ui/rainbow-button';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import LineChart from './LineChart';
+import PieChart from './PieChart';
+import TradingAnalysis from './TradingAnalysis';
+import TokensTable from './tokens/tokens-table';
+import TransactionTable from './transactions/transaction-table';
 
 const solConversionFactor = 1e9;
 
@@ -19,17 +32,16 @@ interface WalletSearchProps {
     initialAddress?: string;
 }
 
-const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
+const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
     const [address, setAddress] = useState<string>(initialAddress);
     const [balance, setBalance] = useState<number | null>(null);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [tokens, setTokens] = useState<any[]>([]);
-    const [historicalData, setHistoricalData] = useState<any[]>([]); // State for historical balance data
+    const [historicalData, setHistoricalData] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [connection, setConnection] = useState<Connection | null>(null);
-
-    console.log({ tokens, historicalData })
+    const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
         // If initialAddress is provided, trigger the search automatically
@@ -42,8 +54,8 @@ const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
         // Initialize the connection and Moralis API when the component mounts
         const initConnectionAndMoralis = () => {
             const conn = new Connection(
-                "https://solana-mainnet.g.alchemy.com/v2/" +
-                  process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+                'https://solana-mainnet.g.alchemy.com/v2/' +
+                    process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
             );
             setConnection(conn);
 
@@ -121,7 +133,7 @@ const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
     // Helper function to calculate historical balances
     const calculateHistoricalBalances = (
         transactions: any[],
-        currentBalance: number
+        currentBalance: number,
     ) => {
         const balanceHistory: {
             time: string; // Convert blockTime to human-readable date
@@ -155,62 +167,112 @@ const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
     };
 
     return (
-        <div className="mx-auto w-11/12 md:w-10/12 lg:w-9/12 xl:w-2/3 my-8">
-            <div className="flex justify-between mt-4">
-                <input
-                    type="text"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Enter wallet address"
-                    className="p-2 w-full mr-4 rounded-md border border-input bg-transparent placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                />
-                <button
-                    onClick={() => fetchWalletData()}
-                    className="button rounded-lg px-2"
-                    title="Search"
-                    aria-label="Search"
-                >
-                    <SearchIcon />
-                </button>
-            </div>
+        <div className="mx-auto my-8 w-11/12 md:w-10/12 lg:w-9/12 xl:w-2/3">
+            <BlurFade delay={0.1}>
+                <motion.div
+                    className="relative"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}>
+                    <motion.div
+                        className="mx-auto flex max-w-xl flex-col gap-3"
+                        whileHover={{ scale: 1.02 }}
+                        onHoverStart={() => setIsHovered(true)}
+                        onHoverEnd={() => setIsHovered(false)}>
+                        <div className="mb-4 text-center">
+                            <motion.div
+                                initial={{ y: -20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-2 backdrop-blur-sm">
+                                <SparklesIcon className="h-4 w-4 animate-pulse text-primary" />
+                                <span className="bg-gradient-to-r from-primary via-purple-400 to-blue-400 bg-clip-text text-sm font-medium text-transparent">
+                                    Analyze Another Wallet
+                                </span>
+                                <SparklesIcon className="h-4 w-4 animate-pulse text-primary" />
+                            </motion.div>
+                        </div>
+                        <div className="relative flex gap-2">
+                            <div className="relative flex-1">
+                                <input
+                                    type="text"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="Enter Solana wallet address"
+                                    className="h-12 w-full rounded-lg border border-border bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                />
+                                <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
+                            </div>
+                            <RainbowButton
+                                onClick={() => fetchWalletData()}
+                                className="h-12 px-6 text-base transition-all duration-300 hover:scale-105">
+                                <SearchIcon className="h-4 w-4" />
+                            </RainbowButton>
+                        </div>
+                        {error && (
+                            <p className="text-center text-sm text-red-500">
+                                {error}
+                            </p>
+                        )}
+                        {isHovered && (
+                            <BorderBeam
+                                size={300}
+                                duration={10}
+                                colorFrom="#4f46e5"
+                                colorTo="#8b5cf6"
+                                borderWidth={1.5}
+                            />
+                        )}
+                    </motion.div>
+                </motion.div>
+            </BlurFade>
 
             {!loading && !error && balance == null && (
-                <p className="mt-24 text-2xl text-muted text-center">
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-24 bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-center text-2xl text-transparent">
                     Enter a wallet address to get started
-                </p>
+                </motion.p>
             )}
             {error && !loading && balance == null && (
-                <p className="text-red-500 mt-24 text-2xl text-center">{error}</p>
+                <p className="mt-24 text-center text-2xl text-red-500">
+                    {error}
+                </p>
             )}
             {loading ? (
                 <div className="mt-4">
-                    <Skeleton className="w-[380px] h-[180px] rounded-lg"></Skeleton>
-                    <div className="mt-12 flex flex-col w-full">
-                        <Skeleton className="w-24 h-10 self-end"></Skeleton>
-                        <Skeleton className="w-full h-10 mt-2"></Skeleton>
-                        <Skeleton className="w-full h-10 mt-1"></Skeleton>
-                        <Skeleton className="w-full h-10 mt-1"></Skeleton>
-                        <Skeleton className="w-full h-10 mt-1"></Skeleton>
+                    <Skeleton className="h-[180px] w-[380px] rounded-lg"></Skeleton>
+                    <div className="mt-12 flex w-full flex-col">
+                        <Skeleton className="h-10 w-24 self-end"></Skeleton>
+                        <Skeleton className="mt-2 h-10 w-full"></Skeleton>
+                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
+                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
+                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
                     </div>
                 </div>
             ) : (
                 balance !== null &&
                 tokens !== null && (
-                    <div className="mt-4 w-full">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="mt-4 w-full">
                         <div className="flex flex-col xl:flex-row xl:space-x-4">
-                            <div className="sm:flex xl:flex-col xl:space-y-4 sm:space-x-4 xl:space-x-0">
+                            <div className="sm:flex sm:space-x-4 xl:flex-col xl:space-x-0 xl:space-y-4">
                                 <BalanceCard SOLBalance={balance} />
                                 <PieChart tokens={tokens} />
                             </div>
                             {historicalData.length > 0 ? (
-                                <Card className="w-full mt-4 xl:mt-0 flex flex-col">
+                                <Card className="mt-4 flex w-full flex-col xl:mt-0">
                                     <CardHeader>
                                         <CardTitle>Balance Over Time</CardTitle>
                                         <CardDescription>
                                             Balance of the wallet over time
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="w-full h-full">
+                                    <CardContent className="h-full w-full">
                                         <LineChart data={historicalData} />
                                     </CardContent>
                                 </Card>
@@ -222,32 +284,41 @@ const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
                                             No historical data available
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="flex flex-col items-center w-full h-full">
+                                    <CardContent className="flex h-full w-full flex-col items-center">
                                         <Image
                                             src="/no-data-illustration.png"
                                             alt="No historical data available"
                                             width={450}
                                             height={450}
                                         />
-                                        <p className="text-muted mt-4 text-sm">
-                                            No historical data available for this wallet
+                                        <p className="mt-4 text-sm text-muted">
+                                            No historical data available for
+                                            this wallet
                                         </p>
                                     </CardContent>
                                 </Card>
                             )}
                         </div>
                         <div className="mt-4">
-                            <TransactionTable transactions={transactions} address={address} />
+                            <TransactionTable
+                                transactions={transactions}
+                                address={address}
+                            />
                         </div>
                         <div className="mt-4">
                             {transactions.length > 0 && (
-                                <TradingAnalysis transactions={transactions} address={address} />
+                                <TradingAnalysis
+                                    transactions={transactions}
+                                    address={address}
+                                />
                             )}
                         </div>
-                        <div className="flex space-x-4 mt-4">
-                            {tokens.length > 0 && <TokensTable tokens={tokens} />}
+                        <div className="mt-4 flex space-x-4">
+                            {tokens.length > 0 && (
+                                <TokensTable tokens={tokens} />
+                            )}
                         </div>
-                    </div>
+                    </motion.div>
                 )
             )}
         </div>
