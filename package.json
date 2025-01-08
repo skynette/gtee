@@ -31,6 +31,7 @@
         "@tanstack/react-table": "^8.20.6",
         "@tsparticles/react": "^3.0.0",
         "bs58": "^4.0.1",
+        "chartjs": "^0.3.24",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "framer-motion": "^11.15.0",
