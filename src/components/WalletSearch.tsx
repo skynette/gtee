@@ -1,33 +1,30 @@
 import { useEffect, useState } from 'react';
 
-
-
 import Image from 'next/image';
-
-
 
 import { Connection, PublicKey } from '@solana/web3.js';
 import { motion } from 'framer-motion';
 import { SearchIcon, SparklesIcon, WalletIcon } from 'lucide-react';
 import Moralis from 'moralis';
 
-
-
 import BalanceCard from '@/components/balanceCard';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-
 
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 import TradingAnalysis from './TradingAnalysis';
 import TokensTable from './tokens/tokens-table';
 import TransactionTable from './transactions/transaction-table';
-
 
 const solConversionFactor = 1e9;
 
@@ -261,21 +258,25 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                         transition={{ delay: 0.3 }}
                         className="mt-8 space-y-4">
                         {/* Balance Cards Row */}
-                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                            <div className="space-y-4">
-                                <BalanceCard SOLBalance={balance} />
-                                <PieChart tokens={tokens} />
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            <div className="flex flex-col gap-6">
+                                <div className="h-[250px]">
+                                    <BalanceCard SOLBalance={balance} />
+                                </div>
+                                <div className="h-[350px]">
+                                    <PieChart tokens={tokens} />
+                                </div>
                             </div>
                             {/* Line Chart */}
                             {historicalData.length > 0 ? (
-                                <Card className="h-full min-h-[500px]">
+                                <Card className="h-[620px]">
                                     <CardHeader>
                                         <CardTitle>Balance Over Time</CardTitle>
                                         <CardDescription>
                                             Historical balance changes
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="h-[400px]">
+                                    <CardContent className="h-[520px]">
                                         <LineChart data={historicalData} />
                                     </CardContent>
                                 </Card>
