@@ -100,7 +100,7 @@ const Footer = () => {
                                 ? 'rgba(255,255,255,0.8)'
                                 : 'rgba(255,255,255,0.5)',
                         }}>
-                        © 2024 swap. All rights reserved.
+                        © 2025 swap. All rights reserved.
                     </motion.p>
                     <span>|</span>
                     <motion.div

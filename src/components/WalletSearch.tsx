@@ -1,28 +1,26 @@
-import { PublicKey, Connection } from "@solana/web3.js";
 import { useEffect, useState } from "react";
-import BalanceCard from "@/components/balanceCard";
-import TransactionTable from "./transactions/transaction-table";
-import { SearchIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import Moralis from "moralis";
-import TokensTable from "./tokens/tokens-table";
-import PieChart from "./PieChart";
-import LineChart from "./LineChart";
 import Image from "next/image";
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Connection, PublicKey } from "@solana/web3.js";
+import { SearchIcon } from "lucide-react";
+import Moralis from "moralis";
+import BalanceCard from "@/components/balanceCard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import LineChart from "./LineChart";
+import PieChart from "./PieChart";
 import TradingAnalysis from "./TradingAnalysis";
+import TokensTable from "./tokens/tokens-table";
+import TransactionTable from "./transactions/transaction-table";
+
 
 const solConversionFactor = 1e9;
 
-const WalletSearch = () => {
-    const [address, setAddress] = useState<string>("");
+interface WalletSearchProps {
+    initialAddress?: string;
+}
+
+const WalletSearch = ({ initialAddress = "" }: WalletSearchProps) => {
+    const [address, setAddress] = useState<string>(initialAddress);
     const [balance, setBalance] = useState<number | null>(null);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [tokens, setTokens] = useState<any[]>([]);
@@ -34,18 +32,23 @@ const WalletSearch = () => {
     console.log({ tokens, historicalData })
 
     useEffect(() => {
+        // If initialAddress is provided, trigger the search automatically
+        if (initialAddress) {
+            fetchWalletData();
+        }
+    }, [initialAddress]); // Add initialAddress as dependency
+
+    useEffect(() => {
         // Initialize the connection and Moralis API when the component mounts
         const initConnectionAndMoralis = () => {
             const conn = new Connection(
                 "https://solana-mainnet.g.alchemy.com/v2/" +
-                "nsjz8GePUTlhMXvz2YcB-F7gR5COI5bc"
-                //   process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+                  process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
             );
             setConnection(conn);
 
             Moralis.start({
-                apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZmZGY3NTIzLWNlYWQtNDljMS04ODJiLTg2ODM5NDZiYTI0YiIsIm9yZ0lkIjoiNDI0NDgzIiwidXNlcklkIjoiNDM2NTY5IiwidHlwZUlkIjoiMmYxOWRiNjUtYmY1OC00OTRkLTk3ZGQtNzVkNDMxMjkyMzBmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzYyNjcwMzYsImV4cCI6NDg5MjAyNzAzNn0.cEzWJ1ohVexHBXSenDCzB1hkTbreDgoeDsJZ026tG5o",
-                // apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+                apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
             });
         };
 
@@ -61,15 +64,15 @@ const WalletSearch = () => {
         // Fetch portfolio data
         try {
             const response = await Moralis.SolApi.account.getSPL({
-                network: "mainnet",
+                network: 'mainnet',
                 address,
             });
 
             const data = response.toJSON();
             setTokens(data);
         } catch (err) {
-            setError("Invalid address or unable to fetch data.");
-            console.error("Error in fetchWalletData:", err);
+            setError('Invalid address or unable to fetch data.');
+            console.error('Error in fetchWalletData:', err);
         }
 
         // Fetch transaction and balance history
@@ -81,18 +84,21 @@ const WalletSearch = () => {
             setBalance(balance / solConversionFactor);
 
             // Fetch recent transaction signatures
-            const signatures = await connection.getSignaturesForAddress(publicKey, {
-                limit: 30,
-            });
+            const signatures = await connection.getSignaturesForAddress(
+                publicKey,
+                {
+                    limit: 30,
+                },
+            );
 
             const transactionDetailsPromises = signatures.map(
                 async (signatureInfo) => {
                     const transaction = await connection.getTransaction(
                         signatureInfo.signature,
-                        { maxSupportedTransactionVersion: 2 }
+                        { maxSupportedTransactionVersion: 2 },
                     );
                     return transaction;
-                }
+                },
             );
 
             const transactions = await Promise.all(transactionDetailsPromises);
@@ -101,12 +107,12 @@ const WalletSearch = () => {
             // Calculate historical balance based on transactions
             const historicalBalances = calculateHistoricalBalances(
                 transactions,
-                balance / solConversionFactor
+                balance / solConversionFactor,
             );
             setHistoricalData(historicalBalances); // Set the historical data for chart
         } catch (err) {
-            setError("Invalid address or unable to fetch data.");
-            console.error("Error in fetchBalance:", err);
+            setError('Invalid address or unable to fetch data.');
+            console.error('Error in fetchBalance:', err);
         } finally {
             setLoading(false);
         }
@@ -161,6 +167,8 @@ const WalletSearch = () => {
                 <button
                     onClick={() => fetchWalletData()}
                     className="button rounded-lg px-2"
+                    title="Search"
+                    aria-label="Search"
                 >
                     <SearchIcon />
                 </button>
