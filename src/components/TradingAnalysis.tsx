@@ -5,6 +5,7 @@ import { BrainIcon, SparklesIcon } from 'lucide-react';
 
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import TypewriterText from './TextFormatting';
 
 interface TradingAnalysisProps {
     transactions: any[];
@@ -15,55 +16,6 @@ interface TradingAnalysisProps {
 interface AnalysisResponse {
     analysis: string;
 }
-
-interface TypewriterTextProps {
-    text: string;
-    delay?: number;
-}
-
-const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
-    const [displayedText, setDisplayedText] = useState('');
-    const [isComplete, setIsComplete] = useState(false);
-
-    useEffect(() => {
-        let currentText = '';
-        let currentIndex = 0;
-        let timeoutId: NodeJS.Timeout;
-        let intervalId: NodeJS.Timeout;
-
-        // eslint-disable-next-line prefer-const
-        timeoutId = setTimeout(() => {
-            intervalId = setInterval(() => {
-                if (currentIndex < text.length) {
-                    currentText += text[currentIndex];
-                    setDisplayedText(currentText);
-                    currentIndex++;
-                } else {
-                    clearInterval(intervalId);
-                    setIsComplete(true);
-                }
-            }, 20);
-        }, delay);
-
-        return () => {
-            clearTimeout(timeoutId);
-            clearInterval(intervalId);
-        };
-    }, [text, delay]);
-
-    return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={`${isComplete ? 'after:hidden' : 'after:animate-blink after:ml-1 after:content-["▋"]'}`}>
-            {displayedText.split('\n\n').map((paragraph, i) => (
-                <p key={i} className="mb-4 last:mb-0">
-                    {paragraph.trim()}
-                </p>
-            ))}
-        </motion.div>
-    );
-};
 
 const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
     transactions,

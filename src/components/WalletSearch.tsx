@@ -1,30 +1,33 @@
 import { useEffect, useState } from 'react';
 
+
+
 import Image from 'next/image';
+
+
 
 import { Connection, PublicKey } from '@solana/web3.js';
 import { motion } from 'framer-motion';
 import { SearchIcon, SparklesIcon, WalletIcon } from 'lucide-react';
 import Moralis from 'moralis';
 
+
+
 import BalanceCard from '@/components/balanceCard';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Skeleton } from '@/components/ui/skeleton';
+
+
 
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 import TradingAnalysis from './TradingAnalysis';
 import TokensTable from './tokens/tokens-table';
 import TransactionTable from './transactions/transaction-table';
+
 
 const solConversionFactor = 1e9;
 
@@ -44,25 +47,22 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
     const [isHovered, setIsHovered] = useState(false);
 
     useEffect(() => {
-        // If initialAddress is provided, trigger the search automatically
         if (initialAddress) {
             fetchWalletData();
         }
-    }, [initialAddress]); // Add initialAddress as dependency
+    }, [initialAddress]);
 
     useEffect(() => {
-        // Initialize the connection and Moralis API when the component mounts
-        const initConnectionAndMoralis = () => {
+        const initConnectionAndMoralis = async () => {
             const conn = new Connection(
-                'https://solana-mainnet.g.alchemy.com/v2/' +
-                    'nsjz8GePUTlhMXvz2YcB-F7gR5COI5bc',
+                'https://solana-mainnet.g.alchemy.com/v2/nsjz8GePUTlhMXvz2YcB-F7gR5COI5bc',
                 //   process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
             );
             setConnection(conn);
 
-            Moralis.start({
+            await Moralis.start({
                 apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZmZGY3NTIzLWNlYWQtNDljMS04ODJiLTg2ODM5NDZiYTI0YiIsIm9yZ0lkIjoiNDI0NDgzIiwidXNlcklkIjoiNDM2NTY5IiwidHlwZUlkIjoiMmYxOWRiNjUtYmY1OC00OTRkLTk3ZGQtNzVkNDMxMjkyMzBmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzYyNjcwMzYsImV4cCI6NDg5MjAyNzAzNn0.cEzWJ1ohVexHBXSenDCzB1hkTbreDgoeDsJZ026tG5o',
-                // apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+                            // apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
             });
         };
 
@@ -70,7 +70,7 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
     }, []);
 
     const fetchWalletData = async () => {
-        if (!connection) return;
+        if (!connection || !address) return;
 
         setLoading(true);
         setError(null);
@@ -88,23 +88,23 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
 
             const portfolioData = portfolioResponse.toJSON();
 
-            // Set native SOL balance
+            // Set native SOL balance (convert from lamports to SOL)
             const solBalance = parseFloat(portfolioData.nativeBalance.solana);
             setBalance(solBalance);
 
-            // Set token balances with enhanced data
+            // Set token balances
             const tokenData = portfolioData.tokens.map((token: any) => ({
                 ...token,
                 name: token.name || 'Unknown Token',
                 symbol: token.symbol || '-',
-                amount: token.amount,
+                amount: parseFloat(token.amount),
                 associatedTokenAddress: token.associatedTokenAddress,
                 mint: token.mint,
                 decimals: token.decimals,
             }));
             setTokens(tokenData);
 
-            // Fetch recent transaction signatures
+            // Fetch recent transactions
             const signatures = await connection.getSignaturesForAddress(
                 publicKey,
                 { limit: 30 },
@@ -114,16 +114,19 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                 async (signatureInfo) => {
                     const transaction = await connection.getTransaction(
                         signatureInfo.signature,
-                        { maxSupportedTransactionVersion: 2 },
+                        {
+                            maxSupportedTransactionVersion: 2,
+                        },
                     );
                     return transaction;
                 },
             );
 
-            const transactions = await Promise.all(transactionDetailsPromises);
+            const transactions = (
+                await Promise.all(transactionDetailsPromises)
+            ).filter((tx) => tx !== null);
             setTransactions(transactions);
 
-            // Calculate historical balance
             const historicalBalances = calculateHistoricalBalances(
                 transactions,
                 solBalance,
@@ -131,49 +134,48 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
             setHistoricalData(historicalBalances);
         } catch (err) {
             console.error('Error fetching wallet data:', err);
-            setError('Failed to fetch wallet data. Please try again.');
+            setError(
+                'Failed to fetch wallet data. Please check the address and try again.',
+            );
+            setBalance(null);
+            setTokens([]);
+            setTransactions([]);
+            setHistoricalData([]);
         } finally {
             setLoading(false);
         }
     };
-    // Helper function to calculate historical balances
+
     const calculateHistoricalBalances = (
         transactions: any[],
         currentBalance: number,
     ) => {
-        const balanceHistory: {
-            time: string; // Convert blockTime to human-readable date
-            balance: number;
-        }[] = [];
+        const balanceHistory = [];
         let runningBalance = currentBalance;
 
-        // Sort transactions by block time
         const sortedTransactions = transactions
-            .filter((tx) => tx !== null)
-            .sort((a, b) => b.blockTime - a.blockTime); // Sort descending (newest to oldest)
+            .filter((tx) => tx !== null && tx.blockTime)
+            .sort((a, b) => b.blockTime - a.blockTime);
 
-        // Calculate balance changes
-        sortedTransactions.forEach((transaction) => {
+        for (const transaction of sortedTransactions) {
             const { meta, blockTime } = transaction;
-
             const preBalance = meta.preBalances[0] / solConversionFactor;
             const postBalance = meta.postBalances[0] / solConversionFactor;
-
             const balanceChange = postBalance - preBalance;
 
-            // Save balance at each block time
             runningBalance -= balanceChange;
             balanceHistory.push({
-                time: new Date(blockTime * 1000).toISOString(), // Convert blockTime to human-readable date
+                time: new Date(blockTime * 1000).toISOString(),
                 balance: runningBalance,
             });
-        });
+        }
 
-        return balanceHistory.reverse(); // Return in chronological order
+        return balanceHistory.reverse();
     };
 
     return (
         <div className="mx-auto my-8 w-11/12 md:w-10/12 lg:w-9/12 xl:w-2/3">
+            {/* Search Bar */}
             <BlurFade delay={0.1}>
                 <motion.div
                     className="relative"
@@ -209,7 +211,7 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                                 <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                             </div>
                             <RainbowButton
-                                onClick={() => fetchWalletData()}
+                                onClick={fetchWalletData}
                                 className="h-12 px-6 text-base transition-all duration-300 hover:scale-105">
                                 <SearchIcon className="h-4 w-4" />
                             </RainbowButton>
@@ -232,7 +234,8 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                 </motion.div>
             </BlurFade>
 
-            {!loading && !error && balance == null && (
+            {/* Content */}
+            {!loading && !error && balance === null && (
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -241,63 +244,57 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                     Enter a wallet address to get started
                 </motion.p>
             )}
-            {error && !loading && balance == null && (
-                <p className="mt-24 text-center text-2xl text-red-500">
-                    {error}
-                </p>
-            )}
+
             {loading ? (
-                <div className="mt-4">
-                    <Skeleton className="h-[180px] w-[380px] rounded-lg"></Skeleton>
-                    <div className="mt-12 flex w-full flex-col">
-                        <Skeleton className="h-10 w-24 self-end"></Skeleton>
-                        <Skeleton className="mt-2 h-10 w-full"></Skeleton>
-                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
-                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
-                        <Skeleton className="mt-1 h-10 w-full"></Skeleton>
+                <div className="mt-8 space-y-4">
+                    <Skeleton className="h-[250px] w-full" />
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        <Skeleton className="h-[250px] w-full" />
+                        <Skeleton className="h-[250px] w-full" />
                     </div>
                 </div>
             ) : (
-                balance !== null &&
-                tokens !== null && (
+                balance !== null && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="mt-4 w-full">
-                        <div className="flex flex-col xl:flex-row xl:space-x-4">
-                            <div className="sm:flex sm:space-x-4 xl:flex-col xl:space-x-0 xl:space-y-4">
+                        className="mt-8 space-y-4">
+                        {/* Balance Cards Row */}
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                            <div className="space-y-4">
                                 <BalanceCard SOLBalance={balance} />
                                 <PieChart tokens={tokens} />
                             </div>
+                            {/* Line Chart */}
                             {historicalData.length > 0 ? (
-                                <Card className="mt-4 flex w-full flex-col xl:mt-0">
+                                <Card className="h-full min-h-[500px]">
                                     <CardHeader>
                                         <CardTitle>Balance Over Time</CardTitle>
                                         <CardDescription>
-                                            Balance of the wallet over time
+                                            Historical balance changes
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="h-full w-full">
+                                    <CardContent className="h-[400px]">
                                         <LineChart data={historicalData} />
                                     </CardContent>
                                 </Card>
                             ) : (
-                                <Card className="w-full">
+                                <Card className="h-full">
                                     <CardHeader>
                                         <CardTitle>Balance Over Time</CardTitle>
                                         <CardDescription>
                                             No historical data available
                                         </CardDescription>
                                     </CardHeader>
-                                    <CardContent className="flex h-full w-full flex-col items-center">
+                                    <CardContent className="flex h-full flex-col items-center justify-center">
                                         <Image
                                             src="/no-data-illustration.png"
-                                            alt="No historical data available"
-                                            width={450}
-                                            height={450}
+                                            alt="No data"
+                                            width={200}
+                                            height={200}
                                         />
-                                        <p className="mt-4 text-sm text-muted">
+                                        <p className="mt-4 text-sm text-muted-foreground">
                                             No historical data available for
                                             this wallet
                                         </p>
@@ -305,25 +302,27 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                                 </Card>
                             )}
                         </div>
-                        <div className="mt-4">
-                            <TransactionTable
-                                transactions={transactions}
-                                address={address}
-                            />
-                        </div>
-                        <div className="mt-4">
-                            {transactions.length > 0 && (
+
+                        {/* Transactions and Analysis */}
+                        {transactions.length > 0 && (
+                            <>
+                                <TransactionTable
+                                    transactions={transactions}
+                                    address={address}
+                                />
                                 <TradingAnalysis
                                     transactions={transactions}
                                     address={address}
                                 />
-                            )}
-                        </div>
-                        <div className="mt-4 flex space-x-4">
-                            {tokens.length > 0 && (
+                            </>
+                        )}
+
+                        {/* Tokens Table */}
+                        {tokens.length > 0 && (
+                            <div className="mt-4">
                                 <TokensTable tokens={tokens} />
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </motion.div>
                 )
             )}
