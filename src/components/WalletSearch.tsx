@@ -1,33 +1,30 @@
 import { useEffect, useState } from 'react';
 
-
-
 import Image from 'next/image';
-
-
 
 import { Connection, PublicKey } from '@solana/web3.js';
 import { motion } from 'framer-motion';
 import { SearchIcon, SparklesIcon, WalletIcon } from 'lucide-react';
 import Moralis from 'moralis';
 
-
-
 import BalanceCard from '@/components/balanceCard';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-
 
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 import TradingAnalysis from './TradingAnalysis';
 import TokensTable from './tokens/tokens-table';
 import TransactionTable from './transactions/transaction-table';
-
 
 const solConversionFactor = 1e9;
 
@@ -73,39 +70,44 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
     }, []);
 
     const fetchWalletData = async () => {
-        if (!connection) return; // Ensure connection is available before fetching
+        if (!connection) return;
 
         setLoading(true);
         setError(null);
 
-        // Fetch portfolio data
-        try {
-            const response = await Moralis.SolApi.account.getSPL({
-                network: 'mainnet',
-                address,
-            });
-
-            const data = response.toJSON();
-            setTokens(data);
-        } catch (err) {
-            setError('Invalid address or unable to fetch data.');
-            console.error('Error in fetchWalletData:', err);
-        }
-
-        // Fetch transaction and balance history
         try {
             const publicKey = new PublicKey(address.trim());
 
-            // Fetch SOL balance
-            const balance = await connection.getBalance(publicKey);
-            setBalance(balance / solConversionFactor);
+            // Get Portfolio data from Moralis
+            const portfolioResponse = await Moralis.SolApi.account.getPortfolio(
+                {
+                    network: 'mainnet',
+                    address: address.trim(),
+                },
+            );
+
+            const portfolioData = portfolioResponse.toJSON();
+
+            // Set native SOL balance
+            const solBalance = parseFloat(portfolioData.nativeBalance.solana);
+            setBalance(solBalance);
+
+            // Set token balances with enhanced data
+            const tokenData = portfolioData.tokens.map((token: any) => ({
+                ...token,
+                name: token.name || 'Unknown Token',
+                symbol: token.symbol || '-',
+                amount: token.amount,
+                associatedTokenAddress: token.associatedTokenAddress,
+                mint: token.mint,
+                decimals: token.decimals,
+            }));
+            setTokens(tokenData);
 
             // Fetch recent transaction signatures
             const signatures = await connection.getSignaturesForAddress(
                 publicKey,
-                {
-                    limit: 30,
-                },
+                { limit: 30 },
             );
 
             const transactionDetailsPromises = signatures.map(
@@ -121,20 +123,19 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
             const transactions = await Promise.all(transactionDetailsPromises);
             setTransactions(transactions);
 
-            // Calculate historical balance based on transactions
+            // Calculate historical balance
             const historicalBalances = calculateHistoricalBalances(
                 transactions,
-                balance / solConversionFactor,
+                solBalance,
             );
-            setHistoricalData(historicalBalances); // Set the historical data for chart
+            setHistoricalData(historicalBalances);
         } catch (err) {
-            setError('Invalid address or unable to fetch data.');
-            console.error('Error in fetchBalance:', err);
+            console.error('Error fetching wallet data:', err);
+            setError('Failed to fetch wallet data. Please try again.');
         } finally {
             setLoading(false);
         }
     };
-
     // Helper function to calculate historical balances
     const calculateHistoricalBalances = (
         transactions: any[],
