@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { motion } from 'framer-motion';
 import { BrainIcon, SparklesIcon } from 'lucide-react';
@@ -31,21 +31,27 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
     useEffect(() => {
         let currentText = '';
         let currentIndex = 0;
+        let timeoutId: NodeJS.Timeout;
+        let intervalId: NodeJS.Timeout;
 
-        setTimeout(() => {
-            const interval = setInterval(() => {
+        // eslint-disable-next-line prefer-const
+        timeoutId = setTimeout(() => {
+            intervalId = setInterval(() => {
                 if (currentIndex < text.length) {
                     currentText += text[currentIndex];
                     setDisplayedText(currentText);
                     currentIndex++;
                 } else {
-                    clearInterval(interval);
+                    clearInterval(intervalId);
                     setIsComplete(true);
                 }
             }, 20);
-
-            return () => clearInterval(interval);
         }, delay);
+
+        return () => {
+            clearTimeout(timeoutId);
+            clearInterval(intervalId);
+        };
     }, [text, delay]);
 
     return (
@@ -65,43 +71,48 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
 }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [hasRequested, setHasRequested] = useState(false);
+
+    const fetchAnalysis = useCallback(async () => {
+        if (!transactions.length || hasRequested) return;
+
+        try {
+            setIsLoading(true);
+            setHasRequested(true);
+
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    transactions,
+                    tokens,
+                    address,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch analysis');
+            }
+
+            const data = await response.json();
+            setAnalysis(data);
+        } catch (err) {
+            console.error('Error fetching analysis:', err);
+            setError('Failed to generate analysis');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [transactions, tokens, address, hasRequested]);
 
     useEffect(() => {
-        const fetchAnalysis = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        transactions,
-                        tokens,
-                        address,
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch analysis');
-                }
-
-                const data = await response.json();
-                setAnalysis(data);
-            } catch (err) {
-                console.error('Error fetching analysis:', err);
-                setError('Failed to generate analysis');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (transactions.length > 0) {
+        if (transactions.length > 0 && !hasRequested) {
             fetchAnalysis();
         }
-    }, [transactions, tokens, address]);
+    }, [fetchAnalysis, transactions.length, hasRequested]);
 
     if (error) {
         return (
