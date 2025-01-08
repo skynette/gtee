@@ -99,6 +99,7 @@ const TransactionTable: FC<TransactionTableProps> = ({
       );
 
       const limitedData = filteredData.slice(0, limit);
+      console.log({ limitedData });
       setData(limitedData);
     };
 
