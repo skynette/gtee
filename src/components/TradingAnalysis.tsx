@@ -9,9 +9,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 interface TradingAnalysisProps {
     transactions: any[];
     address: string;
+    tokens?: any[];
 }
 
-// Typing animation component
+interface AnalysisResponse {
+    portfolioOverview: string;
+    tradingBehavior: string;
+    riskProfile: string;
+    marketEngagement: string;
+    recommendations: string;
+}
 interface TypewriterTextProps {
     text: string;
     delay?: number;
@@ -35,7 +42,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
                     clearInterval(interval);
                     setIsComplete(true);
                 }
-            }, 20); // Adjust typing speed here
+            }, 20);
 
             return () => clearInterval(interval);
         }, delay);
@@ -54,64 +61,84 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
 const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
     transactions,
     address,
+    tokens = [],
 }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // AI analysis prompt template
-    const generateAnalysis = () => {
-        const totalTransactions = transactions.length;
-        const timeSpan =
-            transactions.length > 0
-                ? Math.ceil(
-                      (Date.now() / 1000 - transactions[0].blockTime) /
-                          (24 * 60 * 60),
-                  )
-                : 0;
+    useEffect(() => {
+        const fetchAnalysis = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        transactions,
+                        tokens,
+                        address,
+                    }),
+                });
 
-        // Analysis sections with more natural language
-        const insights = [
-            {
-                title: 'Transaction Overview',
-                content: `This wallet has conducted ${totalTransactions} transactions in the past ${timeSpan} days, showing ${totalTransactions > 10 ? 'active' : 'moderate'} engagement with the Solana ecosystem.`,
-            },
-            {
-                title: 'Trading Patterns',
-                content: `Based on the transaction history, this wallet exhibits ${
-                    totalTransactions > 20
-                        ? 'frequent trading behavior'
-                        : 'occasional trading activity'
-                }. The transaction patterns suggest a ${
-                    totalTransactions > 15 ? 'sophisticated' : 'cautious'
-                } approach to portfolio management.`,
-            },
-            {
-                title: 'Risk Assessment',
-                content: `The wallet's trading behavior indicates a ${
-                    totalTransactions > 25 ? 'high' : 'moderate'
-                } risk tolerance. ${
-                    totalTransactions > 20
-                        ? 'Regular interaction with DeFi protocols suggests familiarity with advanced trading strategies.'
-                        : 'The transaction pattern shows a measured approach to cryptocurrency investments.'
-                }`,
-            },
-            {
-                title: 'Strategic Recommendations',
-                content: `Consider ${
-                    totalTransactions < 10
-                        ? 'exploring more DeFi opportunities while maintaining your careful approach'
-                        : 'implementing stop-loss strategies to protect your active trading positions'
-                }. ${
-                    timeSpan > 30
-                        ? 'Your long-term holding strategy appears effective.'
-                        : 'Consider extending your investment timeframe for better returns.'
-                }`,
-            },
-        ];
+                if (!response.ok) {
+                    throw new Error('Failed to fetch analysis');
+                }
 
-        return insights;
-    };
+                const data = await response.json();
+                setAnalysis(data);
+            } catch (err) {
+                console.error('Error fetching analysis:', err);
+                setError('Failed to generate analysis');
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-    const analysis = generateAnalysis();
+        if (transactions.length > 0) {
+            fetchAnalysis();
+        }
+    }, [transactions, tokens, address]);
+
+    if (error) {
+        return (
+            <Card className="relative overflow-hidden">
+                <CardContent className="p-6 text-red-500">{error}</CardContent>
+            </Card>
+        );
+    }
+
+    if (isLoading || !analysis) {
+        return (
+            <Card className="relative overflow-hidden">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2">
+                        <BrainIcon className="h-6 w-6 animate-pulse text-primary" />
+                        <span className="text-sm">
+                            Generating AI analysis...
+                        </span>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const insights = [
+        { title: 'Portfolio Overview', content: analysis.portfolioOverview },
+        {
+            title: 'Trading Behavior Analysis',
+            content: analysis.tradingBehavior,
+        },
+        { title: 'Risk Profile & Strategy', content: analysis.riskProfile },
+        { title: 'Market Engagement', content: analysis.marketEngagement },
+        {
+            title: 'Strategic Recommendations',
+            content: analysis.recommendations,
+        },
+    ];
 
     return (
         <motion.div
@@ -142,7 +169,7 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
                     </motion.div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {analysis.map((section, index) => (
+                    {insights.map((section, index) => (
                         <motion.div
                             key={section.title}
                             initial={{ opacity: 0, x: -20 }}
