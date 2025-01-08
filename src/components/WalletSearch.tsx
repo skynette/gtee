@@ -307,11 +307,11 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
                         {/* Transactions and Analysis */}
                         {transactions.length > 0 && (
                             <>
-                                <TransactionTable
+                                <TradingAnalysis
                                     transactions={transactions}
                                     address={address}
                                 />
-                                <TradingAnalysis
+                                <TransactionTable
                                     transactions={transactions}
                                     address={address}
                                 />

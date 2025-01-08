@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+
 import Image from 'next/image';
+
 import { motion } from 'framer-motion';
 import { BrainIcon, Sparkles, SparklesIcon, WalletIcon } from 'lucide-react';
+
 import AnimatedShinyText from '@/components/ui/animated-shiny-text';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { RainbowButton } from '@/components/ui/rainbow-button';
-
 
 interface WalletInputProps {
     onSubmit: (address: string) => void;
@@ -18,7 +20,6 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
     const [error, setError] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
-
         console.log('subnit clicked');
         e.preventDefault();
         setError('');
@@ -56,8 +57,9 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
                             placeholder="Enter Solana wallet address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            className={`h-12 w-full rounded-lg border ${error ? 'border-red-500' : 'border-border'
-                                } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                            className={`h-12 w-full rounded-lg border ${
+                                error ? 'border-red-500' : 'border-border'
+                            } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
                         />
                         <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                     </div>
@@ -140,7 +142,8 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
     <section className="relative pt-24">
-        <div className="mx-auto grid max-w-screen-xl gap-16 px-6 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-screen-xl gap-8 px-4 md:gap-12 lg:grid-cols-2 lg:gap-16 lg:px-6">
+            {/* Left column - Content */}
             <BlurFade
                 delay={0.3}
                 className="relative flex flex-col justify-center">
@@ -158,7 +161,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                 </div>
 
                 <div className="relative z-10">
-                    <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+                    <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                         <span className="block bg-gradient-to-r from-white via-white/90 to-white/80 bg-clip-text text-transparent">
                             Analyze Any
                         </span>
@@ -172,7 +175,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                         </span>
                     </h1>
 
-                    <p className="mt-6 max-w-xl bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-lg text-transparent">
+                    <p className="mt-6 max-w-xl bg-gradient-to-r from-gray-100 via-gray-300 to-gray-100 bg-clip-text text-base text-transparent sm:text-lg">
                         Enter any Solana wallet address to get detailed
                         AI-powered analytics, transaction history, and
                         performance metrics. Powered by advanced on-chain
@@ -187,24 +190,25 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                 <MetricsPreview />
             </BlurFade>
 
+            {/* Right column - Banner Image */}
             <BlurFade
                 delay={0.4}
-                className="relative flex flex-col justify-center">
-                <div className="relative">
-                    {/* Main 3D illustration */}
+                className="relative flex min-h-[400px] items-center justify-center lg:min-h-[600px]">
+                <div className="relative w-full">
+                    {/* Main banner container */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5, duration: 0.5 }}
-                        className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm"
-                    >
-                        <div className="relative w-full">
+                        className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm">
+                        {/* Image container with aspect ratio */}
+                        <div className="relative aspect-[4/3] w-full">
                             <Image
                                 src="/banner.png"
                                 alt="AI Analytics Dashboard"
-                                width={800}
-                                height={800}
-                                className="object-contain w-full h-full"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                                className="object-cover"
                                 priority
                             />
                             {/* Gradient overlay */}
@@ -224,7 +228,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                         initial={{ x: 20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: 0.7 }}
-                        className="absolute -right-4 top-8 z-20 w-64 overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
+                        className="absolute -right-4 top-8 z-20 w-64 max-w-[calc(100%-2rem)] overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
                         <h3 className="text-lg font-semibold text-primary">
                             Live Analytics
                         </h3>
@@ -244,7 +248,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: 0.8 }}
-                        className="absolute -left-4 bottom-8 z-20 w-64 overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
+                        className="absolute -left-4 bottom-8 z-20 w-64 max-w-[calc(100%-2rem)] overflow-hidden rounded-xl border bg-card/50 p-4 backdrop-blur-sm">
                         <h3 className="text-lg font-semibold text-primary">
                             AI Insights
                         </h3>
