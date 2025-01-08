@@ -48,57 +48,63 @@ const generateFallbackAnalysis = (data: any) => {
         avgVolume
     });
 
-    // Generate insights
-    const portfolioOverview = generatePortfolioOverview({
-        uniqueTokens,
-        totalTransactions,
-        timeSpan,
-        txPerDay,
-        avgVolume
-    });
+    // Generate comprehensive analysis
+    const diversificationLevel = uniqueTokens > 10 ? 'highly diversified' :
+        uniqueTokens > 5 ? 'well-diversified' :
+            uniqueTokens > 3 ? 'moderately concentrated' : 'highly concentrated';
 
-    const tradingBehavior = generateTradingBehavior({
-        avgVolume,
-        txPerDay,
-        mostActiveHour: Number(mostActiveHour),
-        volumeTrend,
-        volatility,
-        maxVolume
-    });
+    const activityLevel = txPerDay > 5 ? 'very active' :
+        txPerDay > 2 ? 'active' :
+            txPerDay > 0.5 ? 'moderate' : 'passive';
 
-    const riskProfile = generateRiskProfile({
-        riskScore,
-        uniqueTokens,
-        txPerDay,
-        volatility,
-        volumeVariance
-    });
+    const tradingStyle = txPerDay > 5 ? 'day trading' :
+        txPerDay > 2 ? 'active trading' :
+            txPerDay > 0.5 ? 'swing trading' : 'position trading';
 
-    const marketEngagement = generateMarketEngagement({
-        totalTransactions,
-        timeSpan,
-        recentTxCount,
-        volumeTrend,
-        txPerDay
-    });
+    const timeContext = Number(mostActiveHour) >= 12 && Number(mostActiveHour) <= 20
+        ? 'during peak market hours'
+        : Number(mostActiveHour) >= 0 && Number(mostActiveHour) < 8
+            ? 'during Asian market hours'
+            : 'during off-peak hours';
 
-    const recommendations = generateRecommendations({
-        riskScore,
-        txPerDay,
-        uniqueTokens,
-        avgVolume,
-        volatility,
-        volumeTrend
-    });
+    const riskLevel = riskScore > 75 ? 'aggressive' :
+        riskScore > 50 ? 'moderate-to-high' :
+            riskScore > 25 ? 'moderate' : 'conservative';
 
+    const engagementLevel = txPerDay > 5 ? 'deeply embedded' :
+        txPerDay > 2 ? 'actively engaged' :
+            txPerDay > 0.5 ? 'regularly participating' : 'selectively involved';
+
+    // Generate recommendations
+    const recommendations = [];
+    if (riskScore > 75) {
+        recommendations.push("implementing stricter risk management protocols");
+    } else if (riskScore < 25) {
+        recommendations.push("exploring opportunities to optimize returns through calculated risk exposure");
+    }
+    if (uniqueTokens < 5) {
+        recommendations.push("evaluating portfolio diversification opportunities");
+    } else if (uniqueTokens > 15) {
+        recommendations.push("consolidating positions to optimize portfolio efficiency");
+    }
+    if (volatility > 50 && volumeTrend === 'increasing') {
+        recommendations.push("implementing position sizing rules");
+    }
+
+    // Construct the analysis text
     return {
-        portfolioOverview,
-        tradingBehavior,
-        riskProfile,
-        marketEngagement,
-        recommendations
+        analysis: `This wallet exhibits a ${diversificationLevel} portfolio with ${uniqueTokens} unique tokens, demonstrating ${uniqueTokens > 5 ? 'a sophisticated approach to risk management' : 'a focused investment strategy'}. Over the past ${timeSpan} days, the account has executed ${totalTransactions} transactions, maintaining ${activityLevel} trading engagement with an average volume of ${avgVolume.toFixed(2)} SOL per transaction.
+
+        The wallet demonstrates a ${tradingStyle} pattern, most active ${timeContext} (${mostActiveHour}:00 UTC). ${volumeTrend === 'increasing' ? 'Recent trading volumes show an upward trend, suggesting growing market confidence' : 'Recent trading volumes indicate a more cautious approach'}. With an average transaction size of ${avgVolume.toFixed(2)} SOL and peak volumes reaching ${maxVolume.toFixed(2)} SOL, ${volatility > 50 ? 'the trading pattern shows significant volatility, indicating opportunistic trading behavior' : 'the consistent transaction sizes suggest a disciplined execution strategy'}.
+
+        The trading behavior indicates a ${riskLevel} risk profile (${riskScore.toFixed(0)}/100), characterized by ${uniqueTokens > 5 ? 'diversified holdings across multiple tokens' : 'concentrated positions in select tokens'}. Transaction volatility metrics (σ=${volatility.toFixed(2)}) ${volatility > 50 ? 'signal comfort with market fluctuations' : 'suggest a preference for stable, predictable trading patterns'}.
+
+        This wallet is ${engagementLevel} in the Solana ecosystem, demonstrating ${volumeTrend === 'increasing' ? 'escalating market involvement' : 'strategic position management'}. ${timeSpan > 30 ? 'The extended trading history demonstrates sustained ecosystem participation and deep market understanding.' : 'The recent trading history suggests an emerging market presence with evolving strategy development.'} 
+
+        Based on this analysis, the key areas for optimization include ${recommendations.slice(0, 3).join(', ')}.`
     };
 };
+
 
 // Helper functions for more nuanced analysis
 const calculateRiskScore = ({
@@ -120,156 +126,10 @@ const calculateRiskScore = ({
     return (frequencyScore + volatilityScore + diversityScore + volumeScore) * 100;
 };
 
-const generatePortfolioOverview = ({ uniqueTokens, totalTransactions, timeSpan, txPerDay, avgVolume }: any) => {
-    const diversificationLevel = uniqueTokens > 10 ? 'highly diversified' :
-        uniqueTokens > 5 ? 'well-diversified' :
-            uniqueTokens > 3 ? 'moderately concentrated' : 'highly concentrated';
-
-    const activityLevel = txPerDay > 5 ? 'very active' :
-        txPerDay > 2 ? 'active' :
-            txPerDay > 0.5 ? 'moderate' : 'passive';
-
-    return `This wallet exhibits a ${diversificationLevel} portfolio with ${uniqueTokens} unique tokens, demonstrating ${uniqueTokens > 5 ? 'a sophisticated approach to risk management' : 'a focused investment strategy'
-        }. Over the past ${timeSpan} days, the account has executed ${totalTransactions} transactions, maintaining ${activityLevel
-        } trading engagement with an average volume of ${avgVolume.toFixed(2)} SOL per transaction. ${txPerDay > 2
-            ? 'The high transaction frequency suggests an actively managed portfolio with regular rebalancing.'
-            : 'The measured transaction frequency indicates a methodical, long-term investment approach.'
-        }`;
-};
-
-const generateTradingBehavior = ({ avgVolume, txPerDay, mostActiveHour, volumeTrend, volatility, maxVolume }: any) => {
-    const tradingStyle = txPerDay > 5 ? 'day trading' :
-        txPerDay > 2 ? 'active trading' :
-            txPerDay > 0.5 ? 'swing trading' : 'position trading';
-
-    const timeContext = mostActiveHour >= 12 && mostActiveHour <= 20
-        ? 'during peak market hours'
-        : mostActiveHour >= 0 && mostActiveHour < 8
-            ? 'during Asian market hours'
-            : 'during off-peak hours';
-
-    return `The wallet demonstrates a ${tradingStyle} pattern, most active ${timeContext} (${mostActiveHour}:00 UTC). ${volumeTrend === 'increasing'
-        ? 'Recent trading volumes show an upward trend, suggesting growing market confidence'
-        : 'Recent trading volumes indicate a more cautious approach'
-        }. With an average transaction size of ${avgVolume.toFixed(2)} SOL and peak volumes reaching ${maxVolume.toFixed(2)} SOL, ${volatility > 50
-            ? 'the trading pattern shows significant volatility, indicating opportunistic trading behavior'
-            : 'the consistent transaction sizes suggest a disciplined execution strategy'
-        }.`;
-};
-
-const generateRiskProfile = ({ riskScore, uniqueTokens, txPerDay, volatility, volumeVariance }: any) => {
-    const riskLevel = riskScore > 75 ? 'aggressive' :
-        riskScore > 50 ? 'moderate-to-high' :
-            riskScore > 25 ? 'moderate' : 'conservative';
-
-    return `The wallet's trading behavior indicates a ${riskLevel} risk profile (${riskScore.toFixed(0)}/100), characterized by ${uniqueTokens > 5 ? 'diversified holdings across multiple tokens' : 'concentrated positions in select tokens'
-        }. ${txPerDay > 2
-            ? 'The high trading frequency suggests active risk management and market timing strategies.'
-            : 'The measured trading approach indicates a focus on risk mitigation through careful position sizing.'
-        } Transaction volatility metrics (σ=${volatility.toFixed(2)}) ${volatility > 50
-            ? 'signal comfort with market fluctuations'
-            : 'suggest a preference for stable, predictable trading patterns'
-        }.`;
-};
-
-const generateMarketEngagement = ({ totalTransactions, timeSpan, recentTxCount, volumeTrend, txPerDay }: any) => {
-    const engagementLevel = txPerDay > 5 ? 'deeply embedded' :
-        txPerDay > 2 ? 'actively engaged' :
-            txPerDay > 0.5 ? 'regularly participating' : 'selectively involved';
-
-    const recentActivity = recentTxCount > txPerDay * 2
-        ? 'increasing market participation'
-        : recentTxCount < txPerDay / 2
-            ? 'reducing market exposure'
-            : 'maintaining consistent engagement';
-
-    return `This wallet is ${engagementLevel} in the Solana ecosystem, with ${totalTransactions} transactions across ${timeSpan} days. ${volumeTrend === 'increasing'
-        ? 'Recent activity shows escalating market involvement'
-        : 'Current trading patterns indicate strategic position management'
-        }. ${timeSpan > 30
-            ? 'The extended trading history demonstrates sustained ecosystem participation and deep market understanding.'
-            : 'The recent trading history suggests an emerging market presence with evolving strategy development.'
-        } The analysis indicates ${recentActivity} in the current market conditions.`;
-};
-
-const generateRecommendations = ({ riskScore, txPerDay, uniqueTokens, avgVolume, volatility, volumeTrend }: any) => {
-    const recommendations = [];
-
-    if (riskScore > 75) {
-        recommendations.push("Consider implementing stricter risk management protocols given the aggressive trading profile");
-    } else if (riskScore < 25) {
-        recommendations.push("Explore opportunities to optimize returns through calculated risk exposure");
-    }
-
-    if (uniqueTokens < 5) {
-        recommendations.push("Evaluate portfolio diversification opportunities to enhance risk-adjusted returns");
-    } else if (uniqueTokens > 15) {
-        recommendations.push("Consider consolidating positions to optimize portfolio efficiency");
-    }
-
-    if (volatility > 50 && volumeTrend === 'increasing') {
-        recommendations.push("Implement position sizing rules to manage increased volatility exposure");
-    }
-
-    if (txPerDay > 5) {
-        recommendations.push("Review trading frequency to optimize gas costs and execution efficiency");
-    }
-
-    if (avgVolume > 100) {
-        recommendations.push("Consider implementing staged entries and exits for large positions");
-    }
-
-    return `Based on the comprehensive analysis, consider: ${recommendations.slice(0, 3).join('; ')}.`;
-};
-
-const tryOpenAIAnalysis = async (formattedData: any) => {
-    try {
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo-16k",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are an AI analyzing Solana wallet trading patterns. Provide detailed insights in a specific JSON format."
-                },
-                {
-                    role: "user",
-                    content: `Analyze this Solana wallet data and provide insights. Format the response as JSON with the exact keys: portfolioOverview, tradingBehavior, riskProfile, marketEngagement, and recommendations.
-
-                    Wallet Data:
-                    - Total Transactions: ${formattedData.totalTransactions}
-                    - Time Period: ${formattedData.timeSpan} days
-                    - Average Volume: ${formattedData.transactionVolumes.reduce((a: any, b: any) => a + b, 0) / formattedData.transactionVolumes.length} SOL
-                    - Unique Tokens: ${formattedData.uniqueTokens}
-                    `
-                }
-            ],
-            temperature: 0.7,
-            response_format: { type: "json_object" }
-        });
-
-        const content = completion.choices[0].message.content;
-        if (content) {
-            return JSON.parse(content);
-        } else {
-            throw new Error('OpenAI response content is null');
-        }
-    } catch (error) {
-        console.error('OpenAI Analysis failed:', error);
-        throw error;
-    }
-};
-
 const tryGeminiAnalysis = async (formattedData: any) => {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const prompt = `Analyze this Solana wallet data and provide insights formatted as JSON:
-    {
-        "portfolioOverview": "<analysis of portfolio composition>",
-        "tradingBehavior": "<analysis of trading patterns>",
-        "riskProfile": "<risk assessment>",
-        "marketEngagement": "<ecosystem engagement analysis>",
-        "recommendations": "<strategic recommendations>"
-    }
+    const prompt = `Analyze this Solana wallet data and provide a comprehensive analysis in a well-structured, flowing narrative. Focus on portfolio composition, trading patterns, risk assessment, and strategic insights. Write it as a cohesive analysis rather than separate sections.
 
     Data:
     - Total Transactions: ${formattedData.totalTransactions}
@@ -279,11 +139,44 @@ const tryGeminiAnalysis = async (formattedData: any) => {
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const analysisText = response.text();
+    return {
+        analysis: response.text()
+    };
+};
 
-    console.log({ analysisText })
+const tryOpenAIAnalysis = async (formattedData: any) => {
+    try {
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo-16k",
+            messages: [
+                {
+                    role: "system",
+                    content: "You are an AI analyzing Solana wallet trading patterns. Provide detailed insights in a flowing narrative format with proper paragraph structure."
+                },
+                {
+                    role: "user",
+                    content: `Analyze this Solana wallet data and provide a comprehensive analysis. Focus on portfolio composition, trading patterns, risk assessment, and strategic insights. Write it as a cohesive analysis with well-structured paragraphs rather than separate sections.
 
-    return JSON.parse(analysisText.replace(/```json\n?|\n?```/g, ''));
+                    Wallet Data:
+                    - Total Transactions: ${formattedData.totalTransactions}
+                    - Time Period: ${formattedData.timeSpan} days
+                    - Average Volume: ${formattedData.transactionVolumes.reduce((a: any, b: any) => a + b, 0) / formattedData.transactionVolumes.length} SOL
+                    - Unique Tokens: ${formattedData.uniqueTokens}`
+                }
+            ],
+            temperature: 0.7
+        });
+
+        const content = completion.choices[0].message.content;
+        if (!content) throw new Error('OpenAI response content is null');
+
+        return {
+            analysis: content
+        };
+    } catch (error) {
+        console.error('OpenAI Analysis failed:', error);
+        throw error;
+    }
 };
 
 export async function POST(request: Request) {
@@ -318,18 +211,16 @@ export async function POST(request: Request) {
             return NextResponse.json(geminiAnalysis);
         } catch (geminiError) {
             console.log('Gemini failed, trying OpenAI...', geminiError);
-            return NextResponse.json({ error: 'Gemini failed' });
-            // try {
-            //     // Try OpenAI as backup
-            //     const openAIAnalysis = await tryOpenAIAnalysis(formattedData);
-            //     return NextResponse.json(openAIAnalysis);
-            // } catch (openAIError) {
-            //     console.log('OpenAI failed, using fallback...');
-
-            //     // Use fallback if both AI services fail
-            //     const fallbackAnalysis = generateFallbackAnalysis(formattedData);
-            //     return NextResponse.json(fallbackAnalysis);
-            // }
+            try {
+                // Try OpenAI as backup
+                const openAIAnalysis = await tryOpenAIAnalysis(formattedData);
+                return NextResponse.json(openAIAnalysis);
+            } catch (openAIError) {
+                console.log('OpenAI failed, using fallback...');
+                // Use fallback if both AI services fail
+                const fallbackAnalysis = generateFallbackAnalysis(formattedData);
+                return NextResponse.json(fallbackAnalysis);
+            }
         }
     } catch (error: any) {
         console.error('Analysis error:', error);

@@ -13,12 +13,9 @@ interface TradingAnalysisProps {
 }
 
 interface AnalysisResponse {
-    portfolioOverview: string;
-    tradingBehavior: string;
-    riskProfile: string;
-    marketEngagement: string;
-    recommendations: string;
+    analysis: string;
 }
+
 interface TypewriterTextProps {
     text: string;
     delay?: number;
@@ -59,7 +56,11 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ text, delay = 0 }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={`${isComplete ? 'after:hidden' : 'after:animate-blink after:ml-1 after:content-["▋"]'}`}>
-            {displayedText}
+            {displayedText.split('\n\n').map((paragraph, i) => (
+                <p key={i} className="mb-4 last:mb-0">
+                    {paragraph.trim()}
+                </p>
+            ))}
         </motion.div>
     );
 };
@@ -137,20 +138,6 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
         );
     }
 
-    const insights = [
-        { title: 'Portfolio Overview', content: analysis.portfolioOverview },
-        {
-            title: 'Trading Behavior Analysis',
-            content: analysis.tradingBehavior,
-        },
-        { title: 'Risk Profile & Strategy', content: analysis.riskProfile },
-        { title: 'Market Engagement', content: analysis.marketEngagement },
-        {
-            title: 'Strategic Recommendations',
-            content: analysis.recommendations,
-        },
-    ];
-
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -179,28 +166,19 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({
                         <SparklesIcon className="h-6 w-6 animate-pulse text-primary" />
                     </motion.div>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    {insights.map((section, index) => (
-                        <motion.div
-                            key={section.title}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.2 }}
-                            className="relative rounded-lg border border-primary/10 bg-card/50 p-4 backdrop-blur-sm">
-                            <h3 className="mb-2 font-semibold text-primary">
-                                <TypewriterText
-                                    text={section.title}
-                                    delay={index * 1000}
-                                />
-                            </h3>
-                            <div className="text-sm text-muted-foreground">
-                                <TypewriterText
-                                    text={section.content}
-                                    delay={index * 1000 + 500}
-                                />
-                            </div>
-                        </motion.div>
-                    ))}
+                <CardContent>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="relative rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <TypewriterText
+                                text={analysis.analysis}
+                                delay={500}
+                            />
+                        </div>
+                    </motion.div>
                 </CardContent>
             </Card>
         </motion.div>
