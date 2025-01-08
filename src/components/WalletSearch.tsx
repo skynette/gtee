@@ -1,30 +1,33 @@
 import { useEffect, useState } from 'react';
 
+
+
 import Image from 'next/image';
+
+
 
 import { Connection, PublicKey } from '@solana/web3.js';
 import { motion } from 'framer-motion';
 import { SearchIcon, SparklesIcon, WalletIcon } from 'lucide-react';
 import Moralis from 'moralis';
 
+
+
 import BalanceCard from '@/components/balanceCard';
 import BlurFade from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Skeleton } from '@/components/ui/skeleton';
+
+
 
 import LineChart from './LineChart';
 import PieChart from './PieChart';
 import TradingAnalysis from './TradingAnalysis';
 import TokensTable from './tokens/tokens-table';
 import TransactionTable from './transactions/transaction-table';
+
 
 const solConversionFactor = 1e9;
 
@@ -55,12 +58,14 @@ const WalletSearch = ({ initialAddress = '' }: WalletSearchProps) => {
         const initConnectionAndMoralis = () => {
             const conn = new Connection(
                 'https://solana-mainnet.g.alchemy.com/v2/' +
-                    process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+                    'nsjz8GePUTlhMXvz2YcB-F7gR5COI5bc',
+                //   process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
             );
             setConnection(conn);
 
             Moralis.start({
-                apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
+                apiKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImZmZGY3NTIzLWNlYWQtNDljMS04ODJiLTg2ODM5NDZiYTI0YiIsIm9yZ0lkIjoiNDI0NDgzIiwidXNlcklkIjoiNDM2NTY5IiwidHlwZUlkIjoiMmYxOWRiNjUtYmY1OC00OTRkLTk3ZGQtNzVkNDMxMjkyMzBmIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzYyNjcwMzYsImV4cCI6NDg5MjAyNzAzNn0.cEzWJ1ohVexHBXSenDCzB1hkTbreDgoeDsJZ026tG5o',
+                // apiKey: process.env.NEXT_PUBLIC_MORALIS_API_KEY,
             });
         };
 
