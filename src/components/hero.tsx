@@ -56,9 +56,8 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
                             placeholder="Enter Solana wallet address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            className={`h-12 w-full rounded-lg border ${
-                                error ? 'border-red-500' : 'border-border'
-                            } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                            className={`h-12 w-full rounded-lg border ${error ? 'border-red-500' : 'border-border'
+                                } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
                         />
                         <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                     </div>
@@ -197,13 +196,15 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5, duration: 0.5 }}
-                        className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm">
-                        <div className="relative aspect-square w-full">
+                        className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl backdrop-blur-sm"
+                    >
+                        <div className="relative w-full">
                             <Image
-                                src="/api/placeholder/800/800"
+                                src="/banner.png"
                                 alt="AI Analytics Dashboard"
-                                layout="fill"
-                                className="object-cover"
+                                width={800}
+                                height={800}
+                                className="object-contain w-full h-full"
                                 priority
                             />
                             {/* Gradient overlay */}
