@@ -113,43 +113,43 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({ transactions, address
     }, [transactions]);
 
     const getRiskColor = (score: number): string => {
-        if (score <= 3) return 'bg-green-50';
-        if (score <= 6) return 'bg-yellow-50';
-        return 'bg-red-50';
+        if (score <= 3) return 'bg-green-950 text-green-200';
+        if (score <= 6) return 'bg-yellow-950 text-yellow-200';
+        return 'bg-red-950 text-red-200';
     };
 
     if (loading) {
         return (
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-gray-200">
                         Trading Analysis
                         <Loader2 className="h-4 w-4 animate-spin" />
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Analyzing Patterns</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-gray-200">Analyzing Patterns</h3>
                         <div className="space-y-3">
-                            <Skeleton className="h-20 w-full" />
-                            <Skeleton className="h-20 w-full" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Identifying Issues</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-gray-200">Identifying Issues</h3>
                         <div className="space-y-3">
-                            <Skeleton className="h-20 w-full" />
-                            <Skeleton className="h-20 w-full" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="text-lg font-semibold mb-4">Generating Recommendations</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-gray-200">Generating Recommendations</h3>
                         <div className="space-y-3">
-                            <Skeleton className="h-20 w-full" />
-                            <Skeleton className="h-20 w-full" />
-                            <Skeleton className="h-20 w-full" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
+                            <Skeleton className="h-20 w-full bg-gray-800" />
                         </div>
                     </div>
                 </CardContent>
@@ -161,12 +161,12 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({ transactions, address
         return (
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Trading Analysis</CardTitle>
+                    <CardTitle className="text-gray-200">Trading Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <Alert variant="destructive">
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>
+                    <Alert variant="destructive" className="border-red-900 bg-red-950">
+                        <AlertTitle className="text-red-200">Error</AlertTitle>
+                        <AlertDescription className="text-red-200">
                             Failed to analyze transactions: {error}
                             <br />
                             Please try again later.
@@ -182,7 +182,7 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({ transactions, address
     return (
         <Card className="mt-4">
             <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-gray-200">
                     <span>Trading Analysis</span>
                     <span className={`text-sm px-3 py-1 rounded-full ${getRiskColor(analysis.riskScore)}`}>
                         Risk Score: {analysis.riskScore}/10
@@ -191,31 +191,31 @@ const TradingAnalysis: React.FC<TradingAnalysisProps> = ({ transactions, address
             </CardHeader>
             <CardContent className="space-y-6">
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">Identified Patterns</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-gray-200">Identified Patterns</h3>
                     {analysis.patterns.map((pattern, index) => (
-                        <Alert key={index} className="mb-2">
-                            <AlertTitle>Pattern {index + 1}</AlertTitle>
-                            <AlertDescription>{pattern}</AlertDescription>
+                        <Alert key={index} className="mb-2 border-blue-900 bg-blue-950">
+                            <AlertTitle className="text-blue-200">Pattern {index + 1}</AlertTitle>
+                            <AlertDescription className="text-blue-200">{pattern}</AlertDescription>
                         </Alert>
                     ))}
                 </div>
 
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">Major Issues</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-gray-200">Major Issues</h3>
                     {analysis.majorIssues.map((issue, index) => (
-                        <Alert key={index} variant="destructive" className="mb-2">
-                            <AlertTitle>Issue {index + 1}</AlertTitle>
-                            <AlertDescription>{issue}</AlertDescription>
+                        <Alert key={index} className="mb-2 border-red-900 bg-red-950">
+                            <AlertTitle className="text-red-200">Issue {index + 1}</AlertTitle>
+                            <AlertDescription className="text-red-200">{issue}</AlertDescription>
                         </Alert>
                     ))}
                 </div>
 
                 <div>
-                    <h3 className="text-lg font-semibold mb-2">Recommendations</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-gray-200">Recommendations</h3>
                     {analysis.recommendations.map((recommendation, index) => (
-                        <Alert key={index} variant="default" className={`mb-2 ${getRiskColor(analysis.riskScore)}`}>
-                            <AlertTitle>Recommendation {index + 1}</AlertTitle>
-                            <AlertDescription>{recommendation}</AlertDescription>
+                        <Alert key={index} className={`mb-2 border-green-900 ${getRiskColor(analysis.riskScore)}`}>
+                            <AlertTitle className="text-green-200">Recommendation {index + 1}</AlertTitle>
+                            <AlertDescription className="text-green-200">{recommendation}</AlertDescription>
                         </Alert>
                     ))}
                 </div>
