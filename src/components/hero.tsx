@@ -57,9 +57,8 @@ const WalletInput: React.FC<WalletInputProps> = ({ onSubmit }) => {
                             placeholder="Enter Solana wallet address"
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
-                            className={`h-12 w-full rounded-lg border ${
-                                error ? 'border-red-500' : 'border-border'
-                            } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
+                            className={`h-12 w-full rounded-lg border ${error ? 'border-red-500' : 'border-border'
+                                } bg-background/80 px-4 pr-12 text-sm backdrop-blur-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50`}
                         />
                         <WalletIcon className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-primary transition-colors" />
                     </div>
@@ -208,7 +207,7 @@ const Hero: React.FC<HeroProps> = ({ handleLogin }) => (
                                 alt="AI Analytics Dashboard"
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
-                                className="object-cover"
+                                className="object-contain"
                                 priority
                             />
                             {/* Gradient overlay */}
