@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
-import { SparklesIcon } from 'lucide-react';
+import { Pill, SparklesIcon } from 'lucide-react';
 
 import AIProcessSection from '@/components/ai-process';
 import Features from '@/components/features-section';
@@ -102,13 +102,27 @@ const Footer = () => {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="https://x.com/swap_sh"
+                            href="https://x.com/aswa___"
                             target="_blank"
                             title="Follow us on X"
                             className="transition-colors hover:text-primary"
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}>
                             <RiTwitterXFill className="h-4 w-4" />
+                        </Link>
+                    </motion.div>
+                    <span>|</span>
+                    <motion.div
+                        whileHover={{ scale: 1.2, rotate: 360 }}
+                        transition={{ type: 'spring', stiffness: 300 }}>
+                        <Link
+                            href="https://pump.fun/"
+                            target="_blank"
+                            title="Visit PumpFun"
+                            className="transition-colors hover:text-primary"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}>
+                            <Pill className="h-4 w-4" />
                         </Link>
                     </motion.div>
                 </motion.div>
