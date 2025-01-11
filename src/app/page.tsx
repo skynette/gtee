@@ -102,7 +102,7 @@ const Footer = () => {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="https://x.com/aswa___"
+                            href="https://x.com/aswa_ai"
                             target="_blank"
                             title="Follow us on X"
                             className="transition-colors hover:text-primary"
