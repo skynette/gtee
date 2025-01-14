@@ -95,7 +95,7 @@ const Footer = () => {
                                 ? 'rgba(255,255,255,0.8)'
                                 : 'rgba(255,255,255,0.5)',
                         }}>
-                        © 2025 ASWA. All rights reserved.
+                        © 2025 Solstats. All rights reserved.
                     </motion.p>
                     <span>|</span>
                     <motion.div
