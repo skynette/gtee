@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { RiTwitterXFill } from '@remixicon/react';
 import { motion } from 'framer-motion';
 import { Pill, SparklesIcon } from 'lucide-react';
 
@@ -16,6 +15,7 @@ import { Brand } from '@/components/logo';
 import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import BlurFade from '@/components/ui/blur-fade';
 import { Button } from '@/components/ui/button';
+import { InstagramLogoIcon } from '@radix-ui/react-icons';
 
 
 const Header = ({
@@ -102,13 +102,13 @@ const Footer = () => {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="https://x.com/aswa_ai"
+                            href="https://www.instagram.com/fleccz/"
                             target="_blank"
-                            title="Follow us on X"
+                            title="Follow us on Instagram"
                             className="transition-colors hover:text-primary"
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}>
-                            <RiTwitterXFill className="h-4 w-4" />
+                            <InstagramLogoIcon className="h-4 w-4" />
                         </Link>
                     </motion.div>
                     <span>|</span>
