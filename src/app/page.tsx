@@ -16,7 +16,7 @@ import { AiParticlesBackground } from '@/components/ui/ai-particles-background';
 import BlurFade from '@/components/ui/blur-fade';
 import { Button } from '@/components/ui/button';
 import { InstagramLogoIcon } from '@radix-ui/react-icons';
-
+import { RiTwitterXFill } from '@remixicon/react';
 
 const Header = ({
     handleLogin,
@@ -102,13 +102,13 @@ const Footer = () => {
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="https://www.instagram.com/fleccz/"
+                            href="https://x.com/elisab_ericson?s=21"
                             target="_blank"
-                            title="Follow us on Instagram"
+                            title="Follow us on X"
                             className="transition-colors hover:text-primary"
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}>
-                            <InstagramLogoIcon className="h-4 w-4" />
+                            <RiTwitterXFill className="h-4 w-4" />
                         </Link>
                     </motion.div>
                     <span>|</span>
