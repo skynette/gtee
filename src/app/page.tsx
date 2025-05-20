@@ -92,14 +92,14 @@ const Footer = () => {
                                 ? 'rgba(255,255,255,0.8)'
                                 : 'rgba(255,255,255,0.5)',
                         }}>
-                        © 2024 swap. All rights reserved.
+                        © 2025 swap. All rights reserved.
                     </motion.p>
                     <span>|</span>
                     <motion.div
                         whileHover={{ scale: 1.2, rotate: 360 }}
                         transition={{ type: 'spring', stiffness: 300 }}>
                         <Link
-                            href="https://x.com/swap_sh"
+                            href="https://x.com/elisab_ericson?s=21"
                             target="_blank"
                             title="Follow us on X"
                             className="transition-colors hover:text-primary"
